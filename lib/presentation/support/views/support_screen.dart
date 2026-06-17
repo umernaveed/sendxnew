@@ -41,7 +41,7 @@ class SupportScreen extends GetView<SupportController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Herme's Courier Support",
+                    "SendX JA Couriers Support",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 17.sp,
