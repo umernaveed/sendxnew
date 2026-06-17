@@ -27,7 +27,8 @@ class SupportScreen extends GetView<SupportController> {
       ),
       body: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: EdgeInsets.fromLTRB(5.w, 2.h, 5.w, 16.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -166,11 +167,21 @@ class _CreateTicketCard extends StatelessWidget {
             Obx(
               () => OutlinedButton.icon(
                 onPressed: controller.pickAttachment,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: Size(double.infinity, 6.h),
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.2.h),
+                ),
                 icon: const Icon(Icons.attach_file),
-                label: Text(
-                  controller.selectedFile.value == null
-                      ? 'Upload receipt, invoice, photo, or document'
-                      : controller.selectedFile.value!.path.split('/').last,
+                label: SizedBox(
+                  width: 68.w,
+                  child: Text(
+                    controller.selectedFile.value == null
+                        ? 'Upload receipt, invoice, photo, or document'
+                        : controller.selectedFile.value!.path.split('/').last,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ),
@@ -203,7 +214,7 @@ class _CreateTicketCard extends StatelessWidget {
                     : () async {
                         final result = await controller.submitTicket();
                         if (result.message.isNotEmpty) {
-                          FlushSnackbar.showSnackBar(result.message);
+                          FlushSnackbar.showSnackBar(result.message, isError: !result.isDone);
                         }
                       },
               ),
@@ -242,14 +253,18 @@ class _TrackTicketCard extends StatelessWidget {
               validator: FormBuilderValidators.required(),
             ),
             SizedBox(height: 2.h),
-            AppButton(
-              title: 'Check Status',
-              onTap: () async {
-                final result = await controller.trackTicket();
-                if (result.message.isNotEmpty && !result.isDone) {
-                  FlushSnackbar.showSnackBar(result.message);
-                }
-              },
+            Obx(
+              () => AppButton(
+                title: controller.isLoading.value ? 'Please wait...' : 'Check Status',
+                onTap: controller.isLoading.value
+                    ? null
+                    : () async {
+                        final result = await controller.trackTicket();
+                        if (result.message.isNotEmpty) {
+                          FlushSnackbar.showSnackBar(result.message, isError: !result.isDone);
+                        }
+                      },
+              ),
             ),
             SizedBox(height: 2.h),
             Obx(
