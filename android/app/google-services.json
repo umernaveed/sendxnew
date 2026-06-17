@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "445190259963",
+    "project_id": "sendx-83d4c",
+    "storage_bucket": "sendx-83d4c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445190259963:android:96dbac079f21115cd65c5e",
+        "android_client_info": {
+          "package_name": "com.sendxm.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDS_hH-f_sL3WiBQW13HRLyGqZyFPvBWYM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
