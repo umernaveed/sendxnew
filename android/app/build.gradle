@@ -32,7 +32,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.sendxm.app"
-    compileSdkVersion localProperties.getProperty('flutter.compileSdkVersion').toInteger()
+    compileSdkVersion localProperties.getProperty('flutter.compileSdkVersion', '35').toInteger()
     ndkVersion flutter.ndkVersion
 
     compileOptions {
