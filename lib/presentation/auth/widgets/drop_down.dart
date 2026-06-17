@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
+import 'package:sendx/app/core/theme/app_colors.dart';
 import 'package:sizer/sizer.dart';
 
 abstract class Pair {
@@ -87,9 +88,9 @@ class CustomDropDownState<T extends Pair> extends State<CustomDropDown<T>> {
         Text(
           widget.title,
           style: context.textTheme.bodyMedium?.copyWith(
-            color: const Color(0xFF7C7C7C),
-            fontSize: 11.sp,
-            fontWeight: FontWeight.w400,
+            color: AppColors.charcoal,
+            fontSize: 10.5.sp,
+            fontWeight: FontWeight.w600,
           ),
         ),
         SizedBox(height: widget.spaceBTW),
@@ -100,24 +101,24 @@ class CustomDropDownState<T extends Pair> extends State<CustomDropDown<T>> {
             isDense: widget.isDense,
             errorBorder: widget.errorBorder ??
                 OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
                     width: 0.5,
-                    color: Colors.red,
+                    color: AppColors.coral,
                   ),
                 ),
             enabledBorder: widget.enabledBorder,
             focusedBorder: widget.focusedBorder,
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(
                 width: 0.5,
-                color: Colors.red,
+                color: AppColors.coral,
               ),
             ),
             disabledBorder: widget.disabledBorder,
             hintStyle: context.textTheme.bodyMedium?.copyWith(
-              color: const Color(0x337C7C7C),
+              color: AppColors.muted.withOpacity(0.55),
               fontSize: 11.sp,
               fontWeight: FontWeight.w400,
             ),
@@ -133,7 +134,7 @@ class CustomDropDownState<T extends Pair> extends State<CustomDropDown<T>> {
           alignment: Alignment.centerLeft,
           elevation: 1,
           style: context.textTheme.bodyMedium?.copyWith(
-            color: Colors.black,
+            color: AppColors.ink,
             fontSize: 11.sp,
             fontWeight: FontWeight.w400,
           ),
@@ -149,7 +150,7 @@ class CustomDropDownState<T extends Pair> extends State<CustomDropDown<T>> {
                 child: Text(
                   item.value,
                   style: context.textTheme.bodyMedium?.copyWith(
-                    color: Colors.black,
+                    color: AppColors.ink,
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w400,
                   ),

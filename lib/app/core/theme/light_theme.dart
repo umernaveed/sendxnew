@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sendx/app/core/theme/app_colors.dart';
 import 'package:sendx/app/core/theme/base_theme.dart';
 import 'package:sizer/sizer.dart';
 
@@ -7,15 +8,15 @@ class LightTheme extends BaseTheme {
   BottomNavigationBarThemeData get bottomNavigationBarThemeData =>
       BottomNavigationBarThemeData(
         selectedIconTheme: const IconThemeData(
-          color: Color(0xFF4791CE),
+          color: AppColors.cyan,
         ),
         unselectedIconTheme: const IconThemeData(
-          color: Color(0xFF181725),
+          color: AppColors.charcoal,
         ),
-        selectedItemColor: const Color(0xFF4791CE),
-        unselectedItemColor: const Color(0xFF181725),
+        selectedItemColor: AppColors.cyan,
+        unselectedItemColor: AppColors.charcoal,
         selectedLabelStyle: TextStyle(
-          color: const Color(0xFF4791CE),
+          color: AppColors.cyan,
           fontSize: 8.sp,
           fontWeight: FontWeight.w600,
         ),
@@ -23,7 +24,7 @@ class LightTheme extends BaseTheme {
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: true,
         unselectedLabelStyle: TextStyle(
-          color: const Color(0xFF181725),
+          color: AppColors.charcoal,
           fontSize: 8.sp,
           fontWeight: FontWeight.w400,
         ),
@@ -35,48 +36,58 @@ class LightTheme extends BaseTheme {
 
   @override
   InputDecorationTheme? get inputDecorationTheme => InputDecorationTheme(
-        iconColor: Colors.grey,
-        suffixIconColor: Colors.grey,
-        enabledBorder: const UnderlineInputBorder(
+        filled: true,
+        fillColor: AppColors.surface,
+        iconColor: AppColors.muted,
+        suffixIconColor: AppColors.muted,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Color(0xFFE2E2E2),
-            width: 1.0, // Border width
-          ),
-        ),
-        border: const UnderlineInputBorder(
-          borderSide: BorderSide(
-            color: Color(0xFFE2E2E2),
-            width: 2.0, // Border width
-          ),
-        ),
-
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.grey,
+            color: AppColors.border,
             width: 1.0,
           ),
+          borderRadius: BorderRadius.circular(14),
         ),
-        // Define the error border
-        errorBorder: const UnderlineInputBorder(
+        border: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.red, // Border color when in error state
-            width: 1.0, // Border width when in error state
+            color: AppColors.border,
+            width: 1.0,
           ),
+          borderRadius: BorderRadius.circular(14),
         ),
-        // Define the disabled border
-        disabledBorder: const UnderlineInputBorder(
+        focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Color(0xFFE2E2E2), // Border color when disabled
-            width: 1.0, // Border width when disabled
+            color: AppColors.cyan,
+            width: 1.4,
           ),
+          borderRadius: BorderRadius.circular(14),
         ),
-
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: AppColors.coral,
+            width: 1.0,
+          ),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: AppColors.coral,
+            width: 1.2,
+          ),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: AppColors.border,
+            width: 1.0,
+          ),
+          borderRadius: BorderRadius.circular(14),
+        ),
         hintStyle: TextStyle(
-          color: const Color(0x337C7C7C),
-          fontSize: 16,
+          color: AppColors.muted.withOpacity(0.55),
+          fontSize: 14,
           fontFamily: fontTheme.fontFamily,
           fontWeight: FontWeight.w400,
-          height: 0.11,
         ),
       );
 
@@ -86,20 +97,30 @@ class LightTheme extends BaseTheme {
       );
 
   @override
-  Color get scaffoldBackgroundColor => Colors.white;
+  Color get scaffoldBackgroundColor => AppColors.surfaceSoft;
 
   @override
-  MaterialColor get primarySwatch => MaterialColor(0xFF4791CE, {
-        50: const Color(0xFF4791CE).withOpacity(0.1),
-        100: const Color(0xFF4791CE).withOpacity(0.2),
-        200: const Color(0xFF4791CE).withOpacity(0.3),
-        300: const Color(0xFF4791CE).withOpacity(0.4),
-        400: const Color(0xFF4791CE).withOpacity(0.5),
-        500: const Color(0xFF4791CE), // Primary color
-        600: const Color(0xFF4791CE).withOpacity(0.6),
-        700: const Color(0xFF4791CE).withOpacity(0.7),
-        800: const Color(0xFF4791CE).withOpacity(0.8),
-        900: const Color(0xFF4791CE).withOpacity(0.9),
+  ColorScheme get colorScheme => ColorScheme.fromSeed(
+        seedColor: AppColors.cyan,
+        primary: AppColors.cyan,
+        secondary: AppColors.coral,
+        surface: AppColors.surface,
+        background: AppColors.surfaceSoft,
+        error: AppColors.coral,
+      );
+
+  @override
+  MaterialColor get primarySwatch => MaterialColor(0xFF12AEDD, {
+        50: AppColors.cyan.withOpacity(0.1),
+        100: AppColors.cyan.withOpacity(0.2),
+        200: AppColors.cyan.withOpacity(0.3),
+        300: AppColors.cyan.withOpacity(0.4),
+        400: AppColors.cyan.withOpacity(0.5),
+        500: AppColors.cyan,
+        600: AppColors.cyan.withOpacity(0.6),
+        700: AppColors.cyan.withOpacity(0.7),
+        800: AppColors.cyan.withOpacity(0.8),
+        900: AppColors.cyan.withOpacity(0.9),
       });
 
   /// dark theme swatch

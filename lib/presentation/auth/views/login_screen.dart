@@ -4,6 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:sendx/app/core/routes/app_pages.dart';
+import 'package:sendx/app/core/theme/app_colors.dart';
 import 'package:sendx/app/util/flush_snackbar.dart';
 import 'package:sendx/presentation/auth/controllers/login_controller.dart';
 import 'package:sendx/presentation/auth/widgets/auth_app_bar.dart';
@@ -35,7 +36,7 @@ class LoginScreen extends GetView<LoginController> {
                 Text(
                   'Log In',
                   style: context.textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFF4791CE),
+                    color: AppColors.ink,
                     fontSize: 26,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w700,
@@ -45,7 +46,7 @@ class LoginScreen extends GetView<LoginController> {
                 Text(
                   'Enter your emails and password',
                   style: context.textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF7C7C7C),
+                    color: AppColors.muted,
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
                   ),
@@ -54,9 +55,9 @@ class LoginScreen extends GetView<LoginController> {
                 Text(
                   'Email',
                   style: TextStyle(
-                    color: const Color(0xFF7C7C7C),
+                    color: AppColors.charcoal,
                     fontSize: 11.sp,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 FormBuilderTextField(
@@ -71,8 +72,8 @@ class LoginScreen extends GetView<LoginController> {
                     ],
                   ),
                   style: const TextStyle(
-                    color: Color(0xFF181725),
-                    fontSize: 18,
+                    color: AppColors.ink,
+                    fontSize: 16,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -80,9 +81,9 @@ class LoginScreen extends GetView<LoginController> {
                 Text(
                   'Password',
                   style: TextStyle(
-                    color: const Color(0xFF7C7C7C),
+                    color: AppColors.charcoal,
                     fontSize: 11.sp,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 ValueListenableBuilder<bool>(
@@ -91,7 +92,7 @@ class LoginScreen extends GetView<LoginController> {
                       return FormBuilderTextField(
                         name: 'password',
                         obscureText: value,
-                        obscuringCharacter: '●',
+                        obscuringCharacter: '*',
                         validator: FormBuilderValidators.compose(
                           [
                             FormBuilderValidators.required(),
@@ -99,13 +100,13 @@ class LoginScreen extends GetView<LoginController> {
                           ],
                         ),
                         style: const TextStyle(
-                          color: Color(0xFF181725),
-                          fontSize: 18,
+                          color: AppColors.ink,
+                          fontSize: 16,
                           letterSpacing: 3,
                           fontWeight: FontWeight.w400,
                         ),
                         decoration: InputDecoration(
-                          hintText: '●●●●●●●',
+                          hintText: '*******',
                           suffixIcon: IconButton(
                             onPressed: () => controller.onPasswordToggle(),
                             icon: Icon(
@@ -124,7 +125,7 @@ class LoginScreen extends GetView<LoginController> {
                       'Forgot Password?',
                       textAlign: TextAlign.center,
                       style: context.textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFF4791CE),
+                        color: AppColors.cyan,
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w400,
                       ),
@@ -149,7 +150,7 @@ class LoginScreen extends GetView<LoginController> {
                 ),
                 SizedBox(height: 3.h),
                 AuthWidgetSpanBuilder(
-                  firstTitle: 'Don’t have an account? ',
+                  firstTitle: "Don't have an account? ",
                   secondTitle: 'Signup',
                   onTap: () => Get.toNamed(AppPages.signUp),
                 ),
@@ -182,20 +183,20 @@ class AuthWidgetSpanBuilder extends StatelessWidget {
             TextSpan(
               text: firstTitle,
               style: context.textTheme.bodySmall?.copyWith(
-                color: const Color(0xFF181725),
+                color: AppColors.ink,
                 fontSize: 9.sp,
                 fontWeight: FontWeight.w400,
               ),
             ),
             WidgetSpan(
               child: InkWell(
-                splashColor: Colors.blue,
+                splashColor: AppColors.cyan.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(3),
                 onTap: onTap,
                 child: Text(
                   secondTitle,
                   style: context.textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF4791CE),
+                    color: AppColors.coral,
                     fontSize: 10.5.sp,
                     fontWeight: FontWeight.w400,
                   ),
@@ -236,25 +237,44 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDefaultButton = backgroundColor == null && side == BorderSide.none;
     return SizedBox(
       width: width ?? context.width,
       height: height.h,
-      child: TextButton(
-        style: TextButton.styleFrom(
-          disabledBackgroundColor: Colors.black12.withOpacity(0.1),
-          backgroundColor: backgroundColor ?? const Color(0xFF4791CE),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(buttonBorderRadius),
-            side: side,
-          ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: onTap != null && isDefaultButton ? AppColors.brandGradient : null,
+          color: isDefaultButton
+              ? (onTap == null ? Colors.black12.withOpacity(0.08) : null)
+              : backgroundColor,
+          borderRadius: BorderRadius.circular(buttonBorderRadius),
+          boxShadow: onTap != null && isDefaultButton
+              ? [
+                  BoxShadow(
+                    color: AppColors.cyan.withOpacity(0.28),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : null,
         ),
-        onPressed: onTap,
-        child: Text(
-          title,
-          style: TextStyle(
-            color: textColor ?? const Color(0xFFFFF9FF),
-            fontSize: fontSize ?? 18,
-            fontWeight: FontWeight.w700,
+        child: TextButton(
+          style: TextButton.styleFrom(
+            disabledBackgroundColor: Colors.transparent,
+            backgroundColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(buttonBorderRadius),
+              side: side,
+            ),
+          ),
+          onPressed: onTap,
+          child: Text(
+            title,
+            style: TextStyle(
+              color: textColor ?? const Color(0xFFFFF9FF),
+              fontSize: fontSize ?? 18,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       ),

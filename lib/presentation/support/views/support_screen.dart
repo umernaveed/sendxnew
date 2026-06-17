@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
+import 'package:sendx/app/core/theme/app_colors.dart';
 import 'package:sendx/app/util/flush_snackbar.dart';
 import 'package:sendx/presentation/account/views/account_screen.dart';
 import 'package:sendx/presentation/auth/views/login_screen.dart';
@@ -19,7 +20,7 @@ class SupportScreen extends GetView<SupportController> {
   Widget build(BuildContext context) {
     return BaseScreen(
       wrapWithAnnotatedRegion: true,
-      backgroundColor: const Color(0xFFFAF4F2).withOpacity(0.4),
+      backgroundColor: AppColors.surfaceSoft,
       value: SystemUiOverlayStyle.dark,
       appBar: const AuthCustomAppBar.withSmallAppLogo(
         backButtonVisible: true,
@@ -35,8 +36,15 @@ class SupportScreen extends GetView<SupportController> {
             Container(
               padding: EdgeInsets.all(4.w),
               decoration: BoxDecoration(
-                color: const Color(0xFF2B123F),
-                borderRadius: BorderRadius.circular(8),
+                gradient: AppColors.brandGradient,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.cyan.withOpacity(0.22),
+                    blurRadius: 24,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,7 +154,7 @@ class _CreateTicketCard extends StatelessWidget {
                 Text(
                   'Description of Issue',
                   style: TextStyle(
-                    color: const Color(0xFF7C7C7C),
+                    color: AppColors.muted,
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w400,
                   ),
@@ -193,13 +201,14 @@ class _CreateTicketCard extends StatelessWidget {
                       width: double.infinity,
                       padding: EdgeInsets.all(3.w),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEFE7F7),
-                        borderRadius: BorderRadius.circular(6),
+                        color: AppColors.surfaceSoft,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppColors.border),
                       ),
                       child: Text(
                         'Ticket Number: ${controller.createdTicketNumber.value}',
                         style: const TextStyle(
-                          color: Color(0xFF2B123F),
+                          color: AppColors.ink,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -275,9 +284,9 @@ class _TrackTicketCard extends StatelessWidget {
                   width: double.infinity,
                   padding: EdgeInsets.all(3.w),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: const Color(0xFF2B123F)),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.surface,
+                    border: Border.all(color: AppColors.border),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,7 +294,7 @@ class _TrackTicketCard extends StatelessWidget {
                       Text(
                         ticket.ticketNumber,
                         style: const TextStyle(
-                          color: Color(0xFF2B123F),
+                          color: AppColors.ink,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -320,14 +329,14 @@ class _SupportCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: const [
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x19000000),
-            blurRadius: 4,
-            offset: Offset(0, 3),
-            spreadRadius: 1,
+            color: AppColors.cyan.withOpacity(0.08),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
           )
         ],
       ),
@@ -337,7 +346,7 @@ class _SupportCard extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              color: const Color(0xFF2B123F),
+              color: AppColors.ink,
               fontSize: 15.sp,
               fontWeight: FontWeight.w700,
             ),

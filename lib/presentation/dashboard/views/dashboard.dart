@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:sendx/app/core/theme/app_colors.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:sendx/app/util/flush_snackbar.dart';
 import 'package:sendx/data/models/dashboard_data/dashboard_data.dart';
@@ -136,14 +137,15 @@ class _RewardBalanceWidget extends StatelessWidget {
       width: context.width,
       padding: EdgeInsets.all(2.h),
       margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Color(0x19000000),
-            blurRadius: 4,
-            offset: Offset(0, 3),
-            spreadRadius: 1.8,
+            color: AppColors.cyan.withOpacity(0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
           )
         ],
       ),
@@ -155,9 +157,9 @@ class _RewardBalanceWidget extends StatelessWidget {
           Text(
             "Rewarded Balance",
             style: TextStyle(
-              color: const Color(0xFF181725),
-              fontSize: 24.sp,
-              fontWeight: FontWeight.w400,
+              color: AppColors.ink,
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w800,
             ),
           ),
           SizedBox(height: 1.h),
@@ -190,14 +192,15 @@ class _ReferralBonusWidget extends StatelessWidget {
       width: context.width,
       padding: EdgeInsets.all(2.h),
       margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Color(0x19000000),
-            blurRadius: 4,
-            offset: Offset(0, 3),
-            spreadRadius: 1.8,
+            color: AppColors.coral.withOpacity(0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
           )
         ],
       ),
@@ -209,9 +212,9 @@ class _ReferralBonusWidget extends StatelessWidget {
           Text(
             "Referral Bonus",
             style: TextStyle(
-              color: const Color(0xFF181725),
-              fontSize: 24.sp,
-              fontWeight: FontWeight.w400,
+              color: AppColors.ink,
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w800,
             ),
           ),
           SizedBox(height: 1.h),
@@ -242,7 +245,7 @@ class _BalanceWidget extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            color: const Color(0xFF181725),
+            color: AppColors.muted,
             fontSize: 10.sp,
             fontWeight: FontWeight.w400,
           ),
@@ -250,7 +253,7 @@ class _BalanceWidget extends StatelessWidget {
         Text(
           balance,
           style: TextStyle(
-            color: const Color(0xFF181725),
+            color: AppColors.ink,
             fontSize: 10.sp,
             fontWeight: FontWeight.w500,
           ),
@@ -269,42 +272,61 @@ class _DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: context.width,
-      height: 14.h,
+      height: 13.5.h,
       margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Color(0x19000000),
-            blurRadius: 4,
-            offset: Offset(0, 3),
-            spreadRadius: 1.8,
+            color: AppColors.cyan.withOpacity(0.10),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
           )
         ],
       ),
       child: Padding(
         padding: EdgeInsets.all(2.h),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 24.sp,
-                fontWeight: FontWeight.w400,
+            Container(
+              width: 1.1.w,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                gradient: AppColors.brandGradient,
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-            Text(
-              subTitle,
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w400,
+            SizedBox(width: 3.w),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                        color: AppColors.ink,
+                        fontSize: 22.sp,
+                        fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  SizedBox(height: 0.4.h),
+                  Text(
+                    subTitle,
+                    style: TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                ],
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -321,14 +343,14 @@ class _DashboardShimmerCard extends StatelessWidget {
       width: context.width,
       height: 14.h,
       margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Color(0x19000000),
-            blurRadius: 4,
-            offset: Offset(0, 3),
-            spreadRadius: 1.8,
+            color: AppColors.cyan.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),

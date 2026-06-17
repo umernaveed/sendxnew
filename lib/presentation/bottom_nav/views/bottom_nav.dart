@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sendx/app/core/routes/app_routes.dart';
+import 'package:sendx/app/core/theme/app_colors.dart';
 import 'package:sendx/presentation/base_screen.dart';
 import 'package:sendx/presentation/bottom_nav/controllers/bottom_nav_controller.dart';
 import 'package:sizer/sizer.dart';
@@ -43,29 +44,28 @@ class BottomNavScreen extends GetView<BottomNavController> {
         ),
       ),
       bottomNavigationBar: Container(
-        height: 12.h,
-        padding: EdgeInsets.only(top: 1.h),
+        height: 11.5.h,
+        margin: EdgeInsets.fromLTRB(3.w, 0, 3.w, 1.2.h),
+        padding: EdgeInsets.only(top: 0.7.h),
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(15),
-            topRight: Radius.circular(15),
-          ),
+          color: Colors.white.withOpacity(0.96),
+          borderRadius: BorderRadius.circular(26),
+          border: Border.all(color: AppColors.border),
           boxShadow: [
             BoxShadow(
-              color: Colors.black38.withOpacity(0.05),
+              color: AppColors.cyan.withOpacity(0.13),
               spreadRadius: 0,
-              offset: const Offset(1, 0),
-              blurRadius: 5,
+              offset: const Offset(0, 10),
+              blurRadius: 24,
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(15),
-            topRight: Radius.circular(15),
-          ),
+          borderRadius: BorderRadius.circular(26),
           child: Obx(
             () => BottomNavigationBar(
+              elevation: 0,
+              backgroundColor: Colors.transparent,
               currentIndex: controller.currentIndex.value,
               onTap: controller.onTabChange,
               items: [
@@ -74,7 +74,7 @@ class BottomNavScreen extends GetView<BottomNavController> {
                     padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
                     child: SvgPicture.asset(
                       'assets/svgs/ic_home.svg',
-                      color: const Color(0xFF4791CE),
+                      color: AppColors.cyan,
                       height: 2.h,
                     ),
                   ),
@@ -92,7 +92,7 @@ class BottomNavScreen extends GetView<BottomNavController> {
                     padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
                     child: SvgPicture.asset(
                       'assets/svgs/ic_person.svg',
-                      color: const Color(0xFF4791CE),
+                      color: AppColors.cyan,
                       height: 2.h,
                     ),
                   ),
@@ -110,7 +110,7 @@ class BottomNavScreen extends GetView<BottomNavController> {
                     padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
                     child: SvgPicture.asset(
                       'assets/svgs/ic_delivery.svg',
-                      color: const Color(0xFF4791CE),
+                      color: AppColors.cyan,
                       height: 2.h,
                     ),
                   ),
@@ -128,6 +128,7 @@ class BottomNavScreen extends GetView<BottomNavController> {
                     padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
                     child: Icon(
                       Icons.newspaper,
+                      color: AppColors.cyan,
                       size: 2.3.h,
                     ),
                   ),
@@ -145,7 +146,7 @@ class BottomNavScreen extends GetView<BottomNavController> {
                     padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
                     child: SvgPicture.asset(
                       'assets/svgs/ic_account.svg',
-                      color: const Color(0xFF4791CE),
+                      color: AppColors.cyan,
                       height: 2.h,
                     ),
                   ),

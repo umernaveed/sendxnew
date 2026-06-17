@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sendx/app/core/theme/app_colors.dart';
 
 abstract class BaseTheme {
   FontTheme get fontTheme;
@@ -13,86 +14,86 @@ abstract class BaseTheme {
   TextTheme get textTheme => TextTheme(
         bodyLarge: TextStyle(
           fontSize: 18,
-          color: Colors.black,
+          color: AppColors.ink,
           fontFamily: fontTheme.fontFamily,
         ),
         bodyMedium: TextStyle(
           fontSize: 16,
-          color: Colors.black,
+          color: AppColors.ink,
           fontFamily: fontTheme.fontFamily,
         ),
         bodySmall: TextStyle(
           fontSize: 14,
-          color: Colors.black,
+          color: AppColors.ink,
           fontFamily: fontTheme.fontFamily,
         ),
         titleLarge: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: Colors.blue,
+          color: AppColors.cyan,
           fontFamily: fontTheme.fontFamily,
         ),
         displayLarge: TextStyle(
           fontSize: 36,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: AppColors.ink,
           fontFamily: fontTheme.fontFamily,
         ),
         displayMedium: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: AppColors.ink,
           fontFamily: fontTheme.fontFamily,
         ),
         displaySmall: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: AppColors.ink,
           fontFamily: fontTheme.fontFamily,
         ),
         headlineLarge: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: AppColors.ink,
           fontFamily: fontTheme.fontFamily,
         ),
         headlineMedium: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: AppColors.ink,
           fontFamily: fontTheme.fontFamily,
         ),
         headlineSmall: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: AppColors.ink,
           fontFamily: fontTheme.fontFamily,
         ),
         labelLarge: TextStyle(
           fontSize: 18,
-          color: Colors.grey,
+          color: AppColors.muted,
           fontFamily: fontTheme.fontFamily,
         ),
         labelMedium: TextStyle(
           fontSize: 16,
-          color: Colors.grey,
+          color: AppColors.muted,
           fontFamily: fontTheme.fontFamily,
         ),
         labelSmall: TextStyle(
           fontSize: 14,
-          color: Colors.grey,
+          color: AppColors.muted,
           fontFamily: fontTheme.fontFamily,
         ),
         titleMedium: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: Colors.blue,
+          color: AppColors.cyan,
           fontFamily: fontTheme.fontFamily,
         ),
         titleSmall: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: Colors.blue,
+          color: AppColors.cyan,
           fontFamily: fontTheme.fontFamily,
         ),
       );
@@ -100,27 +101,27 @@ abstract class BaseTheme {
   ThemeData get themeData => ThemeData(
         fontFamily: fontTheme.fontFamily,
         brightness: brightness,
-        useMaterial3: false,
-        primaryColor: const Color(0xFF4791CE),
+        useMaterial3: true,
+        primaryColor: AppColors.cyan,
         primarySwatch: primarySwatch,
         scaffoldBackgroundColor: scaffoldBackgroundColor,
         floatingActionButtonTheme: floatingActionButtonTheme,
         textTheme: textTheme,
         progressIndicatorTheme: const ProgressIndicatorThemeData(
-          color: Color(0xFF4791CE),
-          circularTrackColor: Color(0xFFE2E2E2),
-          linearTrackColor: Color(0xFFE2E2E2),
+          color: AppColors.cyan,
+          circularTrackColor: AppColors.border,
+          linearTrackColor: AppColors.border,
           linearMinHeight: 4.0,
         ),
         bottomNavigationBarTheme: bottomNavigationBarThemeData,
         inputDecorationTheme: inputDecorationTheme,
         colorScheme: colorScheme,
         datePickerTheme: const DatePickerThemeData(
-          headerBackgroundColor: Color(0xFF4791CE),
-          headerForegroundColor: Colors.black,
+          headerBackgroundColor: AppColors.cyan,
+          headerForegroundColor: Colors.white,
         ),
         textSelectionTheme: const TextSelectionThemeData(
-          cursorColor: Colors.black,
+          cursorColor: AppColors.cyan,
         ),
       );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:sendx/app/core/theme/app_colors.dart';
 import 'package:sizer/sizer.dart';
 
 enum FieldType {
@@ -68,7 +69,7 @@ class AppTextField extends StatelessWidget {
       textInputAction: textInputAction,
       keyboardType: keyboardType,
       onTapOutside: (event) => FocusScope.of(context).unfocus(),
-      obscuringCharacter: '●',
+      obscuringCharacter: '*',
       onChanged: onChange,
       decoration: InputDecoration(
         isDense: false,
@@ -76,7 +77,7 @@ class AppTextField extends StatelessWidget {
         hintStyle: context.theme.inputDecorationTheme.hintStyle?.copyWith(
           color: hintColor,
         ),
-        hintText: type.isPassword ? '●●●●●●●' : hint,
+        hintText: type.isPassword ? '*******' : hint,
         suffixIcon: type.isPassword
             ? IconButton(
                 onPressed: onPasswordToggle,
@@ -87,8 +88,8 @@ class AppTextField extends StatelessWidget {
             : const SizedBox.shrink(),
       ),
       style: TextStyle(
-        color: const Color(0xFF181725),
-        fontSize: 18,
+        color: AppColors.ink,
+        fontSize: 16,
         letterSpacing: type.isPassword ? 3 : 0,
         fontWeight: FontWeight.w400,
       ),
@@ -100,9 +101,9 @@ class AppTextField extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            color: titleColor ?? const Color(0xFF7C7C7C),
-            fontSize: 11.sp,
-            fontWeight: FontWeight.w400,
+            color: titleColor ?? AppColors.charcoal,
+            fontSize: 10.5.sp,
+            fontWeight: FontWeight.w600,
           ),
         ),
         if (type.isParagraph) ...[
@@ -133,7 +134,7 @@ class SearchField extends StatelessWidget {
           prefixIcon: IconButton(
             icon: Icon(
               Icons.search,
-              color: const Color(0x993C3C43),
+              color: AppColors.cyan,
               size: 2.5.h,
             ),
             onPressed: () {},
@@ -149,38 +150,38 @@ class SearchField extends StatelessWidget {
           border: OutlineInputBorder(
             borderSide: const BorderSide(
               width: 1,
-              color: Color(0xFFD9D9D9),
+              color: AppColors.border,
             ),
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: BorderRadius.circular(14),
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(
               width: 1,
-              color: Color(0xFFD9D9D9),
+              color: AppColors.border,
             ),
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: BorderRadius.circular(14),
           ),
           errorBorder: OutlineInputBorder(
             borderSide: const BorderSide(
               width: 1,
-              color: Colors.red,
+              color: AppColors.coral,
             ),
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: BorderRadius.circular(14),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(
               width: 2,
-              color: Colors.blue,
+              color: AppColors.cyan,
             ),
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: BorderRadius.circular(14),
           ),
           hintStyle: context.theme.inputDecorationTheme.hintStyle?.copyWith(
-            color: const Color(0x993C3C43),
+            color: AppColors.muted,
           ),
           hintText: hint,
         ),
         style: TextStyle(
-          color: const Color(0xFF181725),
+          color: AppColors.ink,
           fontSize: 12.sp,
           fontWeight: FontWeight.w400,
         ),

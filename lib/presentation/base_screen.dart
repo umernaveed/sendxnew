@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:sendx/app/core/theme/app_colors.dart';
 
 class BaseScreen extends StatelessWidget {
   final PreferredSizeWidget? appBar;
@@ -107,14 +108,8 @@ class BaseScreen extends StatelessWidget {
         width: context.width,
         height: context.height,
         decoration: showGradients
-            ? BoxDecoration(
-                image: DecorationImage(
-                  alignment: Alignment.bottomCenter,
-                  image: ExactAssetImage(
-                    bottomGradient ??
-                        'assets/images/main_img_bottombar_gradient.jpeg',
-                  ),
-                ),
+            ? const BoxDecoration(
+                gradient: AppColors.pageGradient,
               )
             : null,
         child: body,
