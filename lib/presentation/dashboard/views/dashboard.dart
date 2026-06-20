@@ -780,7 +780,7 @@ class _ManagerCard extends StatelessWidget {
           Container(
             width: 12.w,
             height: 12.w,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.cyan.withOpacity(0.12),
               shape: BoxShape.circle,
             ),
