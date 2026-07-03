@@ -47,4 +47,19 @@ class LocalRepositoryImp implements LocalRepository {
   User getInstantUser() {
     return _localDataSource.getInstantUser();
   }
+
+  @override
+  Future<String> getMobileCacheVersion() {
+    return _localDataSource.getMobileCacheVersion();
+  }
+
+  @override
+  Future<void> saveMobileCacheVersion(String version) {
+    return _localDataSource.saveMobileCacheVersion(version);
+  }
+
+  @override
+  Future<void> clearCacheKeepingSession() {
+    return _localDataSource.clearCacheKeepingSession();
+  }
 }

@@ -19,6 +19,8 @@ class Setting {
   final String? textColor;
   @JsonKey(name: 'app_version')
   final String? appVersion;
+  @JsonKey(name: 'mobile_cache_version')
+  final String? mobileCacheVersion;
 
   const Setting({
     this.siteName,
@@ -28,6 +30,7 @@ class Setting {
     this.btnColor,
     this.textColor,
     this.appVersion,
+    this.mobileCacheVersion,
   });
 
   factory Setting.fromJson(Map<String, dynamic> json) {
@@ -44,6 +47,7 @@ class Setting {
     String? btnColor,
     String? textColor,
     String? appVersion,
+    String? mobileCacheVersion,
   }) {
     return Setting(
       siteName: siteName ?? this.siteName,
@@ -53,6 +57,7 @@ class Setting {
       btnColor: btnColor ?? this.btnColor,
       textColor: textColor ?? this.textColor,
       appVersion: appVersion ?? this.appVersion,
+      mobileCacheVersion: mobileCacheVersion ?? this.mobileCacheVersion,
     );
   }
 
@@ -71,5 +76,6 @@ class Setting {
       appLogo.hashCode ^
       siteTitle.hashCode ^
       btnColor.hashCode ^
-      textColor.hashCode;
+      textColor.hashCode ^
+      mobileCacheVersion.hashCode;
 }

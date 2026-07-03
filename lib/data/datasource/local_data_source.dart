@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sendx/data/models/user/user.dart';
 import 'package:sendx/domain/datasource/local_data_source.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class LocalDataSourceImp implements LocalDataSource {
   final LocalClient _localClient;
@@ -61,6 +62,34 @@ class LocalDataSourceImp implements LocalDataSource {
   @override
   Future<void> loggedIN({bool isLoggedIn = true}) async {
     await _localClient.appBox.put('is_logged_in', isLoggedIn);
+  }
+
+  @override
+  Future<String> getMobileCacheVersion() async {
+    final r = _localClient.appBox.get(
+      'mobile_cache_version',
+      defaultValue: '',
+    );
+    return r.toString();
+  }
+
+  @override
+  Future<void> saveMobileCacheVersion(String version) async {
+    await _localClient.appBox.put('mobile_cache_version', version);
+  }
+
+  @override
+  Future<void> clearCacheKeepingSession() async {
+    final user = await getUser();
+    final loggedIn = await isLoggedIn();
+    final cacheVersion = await getMobileCacheVersion();
+
+    await _localClient.clearBox();
+    await DefaultCacheManager().emptyCache();
+
+    await _localClient.appBox.put('user', user);
+    await _localClient.appBox.put('is_logged_in', loggedIn);
+    await _localClient.appBox.put('mobile_cache_version', cacheVersion);
   }
 }
 

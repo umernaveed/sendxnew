@@ -39,6 +39,7 @@ class OnBoardingController extends GetxController {
       final result = await _remoteRepository.getAppMeta();
       final data = result.data;
       isLoading.value = false;
+      await _clearCacheIfNeeded(data);
       meta.value = data;
 
       // await takeStepOnBaseOfSession();
@@ -46,6 +47,23 @@ class OnBoardingController extends GetxController {
       isLoading.value = false;
       // await takeStepOnBaseOfSession();
     }
+  }
+
+  Future<void> _clearCacheIfNeeded(AppMeta data) async {
+    final remoteVersion = data.setting?.mobileCacheVersion?.trim() ?? '';
+
+    if (remoteVersion.isEmpty) {
+      return;
+    }
+
+    final localVersion = await _localRepository.getMobileCacheVersion();
+
+    if (localVersion == remoteVersion) {
+      return;
+    }
+
+    await _localRepository.clearCacheKeepingSession();
+    await _localRepository.saveMobileCacheVersion(remoteVersion);
   }
 
   Future<void> proceedFurther() async {

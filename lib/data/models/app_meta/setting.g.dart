@@ -14,6 +14,7 @@ Setting _$SettingFromJson(Map<String, dynamic> json) => Setting(
       btnColor: json['btn_color'] as String?,
       textColor: json['text_color'] as String?,
       appVersion: json['app_version'] as String?,
+      mobileCacheVersion: json['mobile_cache_version'] as String?,
     );
 
 Map<String, dynamic> _$SettingToJson(Setting instance) => <String, dynamic>{
@@ -24,4 +25,5 @@ Map<String, dynamic> _$SettingToJson(Setting instance) => <String, dynamic>{
       'btn_color': instance.btnColor,
       'text_color': instance.textColor,
       'app_version': instance.appVersion,
+      'mobile_cache_version': instance.mobileCacheVersion,
     };
