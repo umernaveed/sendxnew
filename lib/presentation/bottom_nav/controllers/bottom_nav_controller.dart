@@ -16,16 +16,13 @@ class BottomNavController extends GetxController {
         Get.toNamed(AppPages.dashboard, id: bottomNavNestedID);
         break;
       case 1:
-        Get.toNamed(AppPages.trackPackages, id: bottomNavNestedID);
+        Get.toNamed(AppPages.addresses, id: bottomNavNestedID);
         break;
       case 2:
-        Get.toNamed(AppPages.addPreAlertScreen, id: bottomNavNestedID);
+        Get.toNamed(AppPages.deliveryScreen, id: bottomNavNestedID);
         break;
       case 3:
         Get.toNamed(AppPages.newsScreen, id: bottomNavNestedID);
-        break;
-      case 4:
-        Get.toNamed(AppPages.account, id: bottomNavNestedID);
         break;
     }
   }

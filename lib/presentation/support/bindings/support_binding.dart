@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:sendx/app/core/get_di.dart';
 import 'package:sendx/data/network/api_client.dart';
+import 'package:sendx/domain/repositories/local_repository.dart';
 import 'package:sendx/presentation/support/controllers/support_controller.dart';
 
 class SupportBinding extends Bindings {
@@ -9,6 +10,7 @@ class SupportBinding extends Bindings {
     Get.put(
       SupportController(
         apiClient: find<IApiClient>(),
+        localRepository: find<LocalRepository>(),
       ),
     );
   }

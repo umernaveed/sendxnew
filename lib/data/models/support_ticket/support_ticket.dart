@@ -8,6 +8,7 @@ class SupportTicket {
   final String trackingNumber;
   final String packageDescription;
   final String issueType;
+  final String priority;
   final String description;
   final String status;
   final String createdAt;
@@ -22,6 +23,7 @@ class SupportTicket {
     required this.trackingNumber,
     required this.packageDescription,
     required this.issueType,
+    required this.priority,
     required this.description,
     required this.status,
     required this.createdAt,
@@ -38,6 +40,7 @@ class SupportTicket {
       trackingNumber: '${json['tracking_number'] ?? ''}',
       packageDescription: '${json['package_description'] ?? ''}',
       issueType: '${json['issue_type'] ?? ''}',
+      priority: '${json['priority'] ?? 'Normal'}',
       description: '${json['description'] ?? ''}',
       status: '${json['status'] ?? ''}',
       createdAt: '${json['created_at'] ?? ''}',
@@ -55,6 +58,7 @@ class SupportTicket {
       trackingNumber: '',
       packageDescription: '',
       issueType: '',
+      priority: 'Normal',
       description: '',
       status: '',
       createdAt: '',

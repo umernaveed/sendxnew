@@ -19,7 +19,7 @@ class BottomNavScreen extends GetView<BottomNavController> {
       extendBody: true,
       wrapWithAnnotatedRegion: true,
       body: Container(
-        margin: EdgeInsets.only(bottom: 10.h),
+        margin: EdgeInsets.only(bottom: 9.h),
         child: Navigator(
           key: Get.nestedKey(controller.bottomNavNestedID),
           onGenerateRoute: (settings) {
@@ -44,9 +44,9 @@ class BottomNavScreen extends GetView<BottomNavController> {
         ),
       ),
       bottomNavigationBar: Container(
-        height: 11.5.h,
-        margin: EdgeInsets.fromLTRB(3.w, 0, 3.w, 1.2.h),
-        padding: EdgeInsets.only(top: 0.7.h),
+        height: 9.8.h,
+        margin: EdgeInsets.fromLTRB(3.w, 0, 3.w, 1.1.h),
+        padding: EdgeInsets.only(top: 0.25.h),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.96),
           borderRadius: BorderRadius.circular(26),
@@ -71,94 +71,75 @@ class BottomNavScreen extends GetView<BottomNavController> {
               items: [
                 BottomNavigationBarItem(
                   activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    padding: EdgeInsets.only(bottom: 0.25.h, top: 0.35.h),
                     child: SvgPicture.asset(
                       'assets/svgs/ic_home.svg',
                       color: AppColors.cyan,
-                      height: 2.h,
+                      height: 2.2.h,
                     ),
                   ),
                   icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    padding: EdgeInsets.only(bottom: 0.25.h, top: 0.35.h),
                     child: SvgPicture.asset(
                       'assets/svgs/ic_home.svg',
-                      height: 2.h,
+                      height: 2.2.h,
                     ),
                   ),
                   label: 'Dashboard',
                 ),
                 BottomNavigationBarItem(
                   activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    padding: EdgeInsets.only(bottom: 0.25.h, top: 0.35.h),
                     child: Icon(
-                      Icons.inventory_2_outlined,
+                      Icons.location_on_outlined,
                       color: AppColors.cyan,
-                      size: 2.4.h,
+                      size: 2.45.h,
                     ),
                   ),
                   icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    padding: EdgeInsets.only(bottom: 0.25.h, top: 0.35.h),
                     child: Icon(
-                      Icons.inventory_2_outlined,
-                      size: 2.4.h,
+                      Icons.location_on_outlined,
+                      size: 2.45.h,
                     ),
                   ),
-                  label: 'Packages',
+                  label: 'Addresses',
                 ),
                 BottomNavigationBarItem(
                   activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    padding: EdgeInsets.only(bottom: 0.25.h, top: 0.35.h),
                     child: Icon(
-                      Icons.add_circle,
+                      Icons.local_shipping_outlined,
                       color: AppColors.cyan,
-                      size: 3.8.h,
+                      size: 2.55.h,
                     ),
                   ),
                   icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    padding: EdgeInsets.only(bottom: 0.25.h, top: 0.35.h),
                     child: Icon(
-                      Icons.add_circle,
-                      color: AppColors.cyan,
-                      size: 3.8.h,
+                      Icons.local_shipping_outlined,
+                      size: 2.55.h,
                     ),
                   ),
-                  label: 'New Package',
+                  label: 'Delivery',
                 ),
                 BottomNavigationBarItem(
                   activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    padding: EdgeInsets.only(bottom: 0.25.h, top: 0.35.h),
                     child: Icon(
-                      Icons.notifications_none_rounded,
+                      Icons.calendar_month_outlined,
                       color: AppColors.cyan,
-                      size: 2.6.h,
+                      size: 2.55.h,
                     ),
                   ),
                   icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    padding: EdgeInsets.only(bottom: 0.25.h, top: 0.35.h),
                     child: Icon(
-                      Icons.notifications_none_rounded,
-                      size: 2.6.h,
+                      Icons.calendar_month_outlined,
+                      size: 2.55.h,
                     ),
                   ),
-                  label: 'Notifications',
-                ),
-                BottomNavigationBarItem(
-                  activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_account.svg',
-                      color: AppColors.cyan,
-                      height: 2.h,
-                    ),
-                  ),
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_account.svg',
-                      height: 2.h,
-                    ),
-                  ),
-                  label: 'Account',
+                  label: 'News',
                 ),
               ],
             ),

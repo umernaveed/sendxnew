@@ -14,7 +14,11 @@ class InvoiceDetailController extends GetxController
   InvoiceDetailController({required RemoteRepository remoteRepository})
       : _remoteRepository = remoteRepository;
 
+  String? _loadedInvoiceNo;
+
   Future<void> getInviceDetails(String invoiceNo) async {
+    if (_loadedInvoiceNo == invoiceNo) return;
+    _loadedInvoiceNo = invoiceNo;
     try {
       change(InvoiceDetailResponse.empty(), status: RxStatus.loading());
       final response = await _remoteRepository.getInvoiceDetails(
@@ -22,6 +26,7 @@ class InvoiceDetailController extends GetxController
       );
       change(response.data, status: RxStatus.success());
     } catch (e) {
+      _loadedInvoiceNo = null;
       change(InvoiceDetailResponse.empty(),
           status: RxStatus.error(e.toString()));
     }

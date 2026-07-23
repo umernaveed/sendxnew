@@ -35,7 +35,7 @@ class DeliveryController extends GetxController
   }
 
   void onItemChecked(GetAllPackage item) {
-    final amount = num.tryParse(item.packageInvoice ?? '0') ?? 0;
+    final amount = _parseAmount(item.packageInvoice);
     if (selectedItems.contains(item)) {
       selectedItems.remove(item);
       totalAmount.value = totalAmount.value - amount;
@@ -43,6 +43,14 @@ class DeliveryController extends GetxController
       selectedItems.add(item);
       totalAmount.value = totalAmount.value + amount;
     }
+  }
+
+  double _parseAmount(String? amount) {
+    final normalized = (amount ?? '0')
+        .replaceAll(',', '')
+        .replaceAll(RegExp('jmd', caseSensitive: false), '')
+        .trim();
+    return double.tryParse(normalized) ?? 0;
   }
 
   void onClear() {
@@ -65,6 +73,16 @@ class DeliveryController extends GetxController
   Future<List<GetAllPackage>> listener(int pageKey,
       {String keyToSearch = ''}) async {
     final result = await _remoteRepository.getAllDeliveryPackage();
-    return result.data.packages;
+    final keyword = keyToSearch.trim().toLowerCase();
+    if (keyword.isEmpty) return result.data.packages;
+
+    return result.data.packages.where((package) {
+      return package.manifestNo.toLowerCase().contains(keyword) ||
+          package.trackingNo.toLowerCase().contains(keyword) ||
+          package.userName.toLowerCase().contains(keyword) ||
+          package.courier.toLowerCase().contains(keyword) ||
+          package.supplierTrackingNo.toLowerCase().contains(keyword) ||
+          package.itemDescription.toLowerCase().contains(keyword);
+    }).toList();
   }
 }

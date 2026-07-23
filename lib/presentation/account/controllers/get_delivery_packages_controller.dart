@@ -23,6 +23,10 @@ class AllDeliveryPackagesController extends GetxController
     super.onClose();
   }
 
+  void onUploadingInvoiceDone(int packageID) {
+    pagingController.refresh();
+  }
+
   @override
   Future<List<GetAllPackage>> listener(
     int pageKey, {

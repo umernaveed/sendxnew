@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:sendx/app/core/get_di.dart';
+import 'package:sendx/app/core/routes/app_pages.dart';
 import 'package:sendx/app/extensions/string_ext.dart';
+import 'package:sendx/app/util/flush_snackbar.dart';
 import 'package:sendx/data/models/invoice_detail/invoice_detail.dart';
-import 'package:sendx/presentation/auth/widgets/auth_app_bar.dart';
 import 'package:sendx/presentation/base_screen.dart';
+import 'package:sendx/presentation/bottom_nav/controllers/bottom_nav_controller.dart';
 import 'package:sendx/presentation/invoices/controller/invoice_detail_controller.dart';
-import 'package:sendx/presentation/widgets/lasco_button.dart';
 import 'package:sendx/presentation/widgets/shimmer_widget.dart';
 import 'package:sizer/sizer.dart';
 
@@ -17,265 +20,469 @@ class InvoiceDetails extends GetView<InvoiceDetailController> {
   Widget build(BuildContext context) {
     final args = Get.arguments;
     if (args != null) {
-      final invoiceNo = Get.arguments as String;
-      controller.getInviceDetails(invoiceNo.toString());
+      controller.getInviceDetails(args.toString());
     }
 
     return BaseScreen(
       wrapWithAnnotatedRegion: true,
-      backgroundColor: const Color(0xFFFAF4F2).withOpacity(0.4),
       value: SystemUiOverlayStyle.dark,
-      appBar: const AuthCustomAppBar.withSmallAppLogo(
-        backButtonVisible: true,
-        usingNavigator: true,
-      ),
-      body: SingleChildScrollView(
+      showGradients: false,
+      backgroundColor: const Color(0xFFF8FBFF),
+      body: SafeArea(
+        bottom: false,
         child: controller.obx(
-          onLoading: const _ShimmerWidget(),
-          onError: (error) => SizedBox(
-            height: context.height / 1.5,
-            width: context.width,
-            child: const Center(
-              child: Text(
-                'Something went wrong try again late',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFF181725),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          ),
+          onLoading: const _InvoiceDetailsLoading(),
+          onError: (_) => const _InvoiceError(),
           (state) {
             if (state == null) return const SizedBox.shrink();
-            return Column(
-              children: [
-                SizedBox(height: 2.h),
-                Container(
-                  alignment: Alignment.topLeft,
-                  width: context.width,
-                  margin: EdgeInsets.symmetric(horizontal: 4.w),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 3.4.w, vertical: 2.h),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x19000000),
-                        blurRadius: 4,
-                        offset: Offset(0, 3),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-                  child: Column(
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(4.w, 0.4.h, 4.w, 2.5.h),
+              child: Column(
+                children: [
+                  const _InvoiceHeader(),
+                  SizedBox(height: 1.3.h),
+                  _InvoiceHero(data: state),
+                  SizedBox(height: 1.6.h),
+                  _BillToCard(data: state),
+                  SizedBox(height: 1.5.h),
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        state.companyName,
-                        style: TextStyle(
-                          color: const Color(0xFF4791CE),
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(height: 0.5.h),
-                      Text(
-                        state.localAddress,
-                        style: TextStyle(
-                          color: const Color(0xFF7C7C7C),
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        'Phone: ${state.phone}',
-                        style: TextStyle(
-                          color: const Color(0xFF7C7C7C),
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 2.h),
-                      Text(
-                        'Invoice To:',
-                        style: TextStyle(
-                          color: const Color(0xFF4791CE),
-                          fontSize: 16.sp,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w700,
-                          height: 0,
-                        ),
-                      ),
-                      SizedBox(height: 0.5.h),
-                      Text(
-                        state.userName,
-                        style: TextStyle(
-                          color: const Color(0xFF7C7C7C),
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        state.address1,
-                        style: TextStyle(
-                          color: const Color(0xFF7C7C7C),
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        'Account no : ${state.mailboxNo}',
-                        style: TextStyle(
-                          color: const Color(0xFF7C7C7C),
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        'Email : ${state.email}',
-                        style: TextStyle(
-                          color: const Color(0xFF7C7C7C),
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 2.h),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Invoice  No:',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(width: 2.w),
-                          Text(
-                            '#${state.invoiceNo}',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Date:',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(width: 2.w),
-                          Text(
-                            state.datePaid.toString().toDDMMYYYY,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          )
-                        ],
-                      ),
-                      SizedBox(height: 2.h),
-                      _StorageFeeNotice(data: state),
-                      SizedBox(height: 1.h),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        itemCount: state.invoiceDetail.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          final item = state.invoiceDetail[index];
-                          return InvoiceItem(
-                            detail: item,
-                            completeResponse: state,
-                          );
-                        },
-                      ),
-                      SizedBox(height: 1.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _SerialRowWidget(
-                            title: 'GCT',
-                            subTitle: state.gstTotal,
-                          ),
-                          const SizedBox.shrink()
-                        ],
-                      ),
-                      SizedBox(height: 1.h),
-                      _AdditionalFee(data: state),
-                      _StorageFeeRow(data: state),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const SizedBox.shrink(),
-                          _SerialRowWidget(
-                            title: 'Sub - Total amount',
-                            subTitle: '${state.subTotal} JMD',
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 1.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const SizedBox.shrink(),
-                          _SerialRowWidget(
-                            title: 'Discount',
-                            subTitle: '${state.discountPrice} JMD',
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 1.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const SizedBox.shrink(),
-                          _SerialRowWidget(
-                            title: 'Total',
-                            subTitle: '${state.grandTotal} JMD',
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 2.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            'Phone: ${state.phone}\n${state.siteEmail}',
-                            style: const TextStyle(
-                              color: Color(0xFF7C7C7C),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 1.h),
-                      LascoButton(
-                        onTap: () async {
-                          await controller.startPayment();
-                        },
-                      ),
+                      Expanded(child: _CompanyCard(data: state)),
+                      SizedBox(width: 3.w),
+                      Expanded(child: _ShipmentCard(data: state)),
                     ],
                   ),
-                ),
-                SizedBox(height: 5.h),
-              ],
+                  SizedBox(height: 1.5.h),
+                  _ChargesBreakdownCard(data: state),
+                  SizedBox(height: 1.5.h),
+                  _StorageFeeNotice(data: state),
+                  SizedBox(height: 1.5.h),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _TimelineCard(data: state)),
+                      SizedBox(width: 3.w),
+                      Expanded(child: _PaymentCard(data: state)),
+                    ],
+                  ),
+                  SizedBox(height: 1.5.h),
+                  _InvoiceActions(data: state),
+                ],
+              ),
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class _InvoiceHeader extends StatelessWidget {
+  const _InvoiceHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 7.8.h,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            left: -1.w,
+            child: IconButton(
+              onPressed: () {
+                final bottomNavNestedID =
+                    find<BottomNavController>().bottomNavNestedID;
+                Get.back(id: bottomNavNestedID);
+              },
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: const Color(0xFF07132D),
+                size: 3.h,
+              ),
+            ),
+          ),
+          SvgPicture.asset(
+            'assets/svgs/app_logo_sendx.svg',
+            width: 22.w,
+            fit: BoxFit.contain,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InvoiceHero extends StatelessWidget {
+  const _InvoiceHero({required this.data});
+
+  final InvoiceDetailResponse data;
+
+  @override
+  Widget build(BuildContext context) {
+    final unpaid = data.status == 0;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(4.2.w, 2.h, 4.2.w, 2.2.h),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF0A73D9), Color(0xFF004A95)],
+        ),
+        borderRadius: BorderRadius.circular(17),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x220A73D9),
+            blurRadius: 20,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.receipt_long_outlined,
+                      color: Colors.white.withOpacity(.82),
+                      size: 2.6.h,
+                    ),
+                    SizedBox(width: 2.w),
+                    Text(
+                      'Invoice Details',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(.9),
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 1.h),
+                Text(
+                  '#${data.invoiceNo}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w900,
+                    height: 1,
+                  ),
+                ),
+                SizedBox(height: 1.h),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_month_outlined,
+                      color: Colors.white.withOpacity(.88),
+                      size: 2.4.h,
+                    ),
+                    SizedBox(width: 1.4.w),
+                    Text(
+                      data.datePaid.toDDMMYYYY,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10.5.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 1.2.h),
+                _HeroStatusChip(unpaid: unpaid),
+                SizedBox(height: 1.4.h),
+                Text(
+                  'Total Amount',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(.9),
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: .4.h),
+                Text(
+                  _amountWithCurrency(data.grandTotal),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 21.sp,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 3.w),
+          Opacity(
+            opacity: .32,
+            child: Icon(
+              Icons.assignment_turned_in_rounded,
+              color: Colors.white,
+              size: 13.h,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroStatusChip extends StatelessWidget {
+  const _HeroStatusChip({required this.unpaid});
+
+  final bool unpaid;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: .8.h),
+      decoration: BoxDecoration(
+        color: unpaid ? const Color(0xFFFFC943) : const Color(0xFF19C477),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Text(
+        unpaid ? 'UNPAID' : 'PAID',
+        style: TextStyle(
+          color: unpaid ? const Color(0xFF151515) : Colors.white,
+          fontSize: 9.5.sp,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+}
+
+class _BillToCard extends StatelessWidget {
+  const _BillToCard({required this.data});
+
+  final InvoiceDetailResponse data;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SoftCard(
+      padding: EdgeInsets.all(4.w),
+      child: Row(
+        children: [
+          Icon(
+            Icons.person_outline_rounded,
+            color: const Color(0xFF0B6EDB),
+            size: 3.4.h,
+          ),
+          SizedBox(width: 3.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _SmallLabel('Bill To'),
+                SizedBox(height: .8.h),
+                Text(
+                  data.userName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: const Color(0xFF111D35),
+                    fontSize: 13.6.sp,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                SizedBox(height: .5.h),
+                Text(
+                  'Account No: ${data.mailboxNo}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: _mutedStyle(context),
+                ),
+                SizedBox(height: .5.h),
+                Text(
+                  data.email,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: _mutedStyle(context),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 7.h,
+            height: 7.h,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF2F6FF),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.mail_outline_rounded,
+              color: const Color(0xFF0B6EDB),
+              size: 3.h,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CompanyCard extends StatelessWidget {
+  const _CompanyCard({required this.data});
+
+  final InvoiceDetailResponse data;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SoftCard(
+      padding: EdgeInsets.all(3.6.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CardTitle(
+            icon: Icons.business_outlined,
+            title: 'Company Details',
+          ),
+          SizedBox(height: 1.5.h),
+          Text(
+            data.companyName,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: const Color(0xFF0B63BF),
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          SizedBox(height: 1.2.h),
+          Text(
+            data.localAddress,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: _mutedStyle(context),
+          ),
+          SizedBox(height: 1.2.h),
+          Row(
+            children: [
+              Icon(
+                Icons.phone_outlined,
+                color: const Color(0xFF0B6EDB),
+                size: 2.2.h,
+              ),
+              SizedBox(width: 1.4.w),
+              Expanded(
+                child: Text(
+                  data.phone,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: _mutedStyle(context),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ShipmentCard extends StatelessWidget {
+  const _ShipmentCard({required this.data});
+
+  final InvoiceDetailResponse data;
+
+  @override
+  Widget build(BuildContext context) {
+    final first = data.invoiceDetail.isNotEmpty ? data.invoiceDetail.first : null;
+    return _SoftCard(
+      padding: EdgeInsets.all(3.6.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CardTitle(
+            icon: Icons.inventory_2_outlined,
+            title: 'Shipment Details',
+          ),
+          SizedBox(height: 1.4.h),
+          _KeyValueLine(label: 'HAWB', value: first?.manifestNo ?? '-'),
+          _KeyValueLine(label: 'Weight', value: _weightText(first?.packageWeight ?? 0)),
+          _KeyValueLine(label: 'Freight Type', value: _freightLabel(data.freightType)),
+          _KeyValueLine(label: 'Description', value: first?.packageDescription ?? '-'),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChargesBreakdownCard extends StatelessWidget {
+  const _ChargesBreakdownCard({required this.data});
+
+  final InvoiceDetailResponse data;
+
+  @override
+  Widget build(BuildContext context) {
+    final details = data.invoiceDetail;
+    final freight = details.fold<double>(0, (sum, item) => sum + _amount(item.packagePrice));
+    final service = details.fold<double>(0, (sum, item) => sum + _amount(item.serviceFee));
+    final custom = details.fold<double>(0, (sum, item) => sum + _amount(item.customFee));
+    final storage = _storageDisplayAmount(data);
+    final discount = _amount(data.discountPrice);
+
+    return _SoftCard(
+      padding: EdgeInsets.fromLTRB(3.6.w, 1.7.h, 3.6.w, 1.2.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CardTitle(
+            icon: Icons.attach_money_rounded,
+            title: 'Charges Breakdown',
+            filledIcon: true,
+          ),
+          SizedBox(height: 1.4.h),
+          _ChargeRow(label: _freightLabel(data.freightType), amount: freight),
+          _ChargeRow(label: 'Service Fee', amount: service),
+          _ChargeRow(label: 'Custom Fee', amount: custom),
+          _ChargeRow(label: 'GCT', amountText: _amountWithCurrency(data.gstTotal)),
+          if (storage > 0)
+            _ChargeRow(label: 'Storage Fee', amount: storage),
+          for (final fee in data.additionalFee ?? [])
+            _ChargeRow(label: fee.name, amountText: _amountWithCurrency(fee.serviceFee)),
+          if (discount > 0)
+            _ChargeRow(label: 'Discount', amount: -discount),
+          SizedBox(height: 1.h),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.3.h),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEAF4FF),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Total Amount',
+                    style: TextStyle(
+                      color: const Color(0xFF0B63BF),
+                      fontSize: 12.2.sp,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                Text(
+                  _amountWithCurrency(data.grandTotal),
+                  style: TextStyle(
+                    color: const Color(0xFF0B63BF),
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -286,65 +493,67 @@ class _StorageFeeNotice extends StatelessWidget {
 
   final InvoiceDetailResponse data;
 
-  double _amount(String value) {
-    return double.tryParse(value.replaceAll(',', '')) ?? 0;
-  }
-
   @override
   Widget build(BuildContext context) {
     final payable = _amount(data.storageFeePayable);
     final waived = _amount(data.storageFeeWaivedAmount);
-    if (payable <= 0 && (data.storageFeeWaived != 1 || waived <= 0)) {
-      return const SizedBox.shrink();
-    }
+    final total = _amount(data.storageFeeTotal);
+    final show = payable > 0 || total > 0 || (data.storageFeeWaived == 1 && waived > 0);
+    if (!show) return const SizedBox.shrink();
 
-    final isDue = payable > 0 && data.status == 0;
-    return Container(
-      width: context.width,
-      padding: EdgeInsets.all(3.w),
-      decoration: BoxDecoration(
-        color: isDue ? const Color(0xFFFFF4D8) : const Color(0xFFEAF7EA),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: isDue ? const Color(0xFFE0A800) : const Color(0xFF2E7D32),
-        ),
-      ),
-      child: Text(
-        isDue
-            ? 'Storage fee due: J\$${data.storageFeePayable}\n${data.storageFeeDaysApplied} days @ J\$${data.storageFeeDailyRate}/day after ${data.storageFeeGraceDays} grace days.'
-            : 'Storage fee waived: J\$${data.storageFeeWaivedAmount}\n${data.storageFeeWaivedReason}',
-        style: TextStyle(
-          color: isDue ? const Color(0xFF7A5200) : const Color(0xFF2E7D32),
-          fontSize: 10.sp,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
+    final due = payable > 0 && data.status == 0;
+    final title = due
+        ? 'Storage Fee Due'
+        : data.storageFeeWaived == 1
+            ? 'Storage Fee Waived'
+            : 'Storage Fee';
+    final amount = due
+        ? data.storageFeePayable
+        : data.storageFeeWaived == 1
+            ? data.storageFeeWaivedAmount
+            : data.storageFeeTotal;
+    final message = due
+        ? '${data.storageFeeDaysApplied} days at ${_amountWithCurrency(data.storageFeeDailyRate)} per day after ${data.storageFeeGraceDays} grace days.'
+        : data.storageFeeWaived == 1
+            ? data.storageFeeWaivedReason
+            : 'Storage fee is included in this invoice.';
 
-class _StorageFeeRow extends StatelessWidget {
-  const _StorageFeeRow({required this.data});
-
-  final InvoiceDetailResponse data;
-
-  double _amount(String value) {
-    return double.tryParse(value.replaceAll(',', '')) ?? 0;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_amount(data.storageFeeTotal) <= 0) return const SizedBox.shrink();
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: 1.h),
+    return _SoftCard(
+      padding: EdgeInsets.all(3.4.w),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox.shrink(),
-          _SerialRowWidget(
-            title: 'Storage Fee',
-            subTitle: '${data.storageFeePayable} JMD',
+          Icon(
+            due ? Icons.warning_amber_rounded : Icons.check_circle_outline_rounded,
+            color: due ? const Color(0xFFE09A00) : const Color(0xFF10A66B),
+            size: 3.h,
+          ),
+          SizedBox(width: 2.5.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$title: ${_amountWithCurrency(amount)}',
+                  style: TextStyle(
+                    color: due ? const Color(0xFF8C6000) : const Color(0xFF0A7C4D),
+                    fontSize: 11.5.sp,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                if (message.trim().isNotEmpty) ...[
+                  SizedBox(height: .6.h),
+                  Text(
+                    message,
+                    style: TextStyle(
+                      color: const Color(0xFF586274),
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
       ),
@@ -352,68 +561,439 @@ class _StorageFeeRow extends StatelessWidget {
   }
 }
 
-class _AdditionalFee extends StatelessWidget {
-  const _AdditionalFee({super.key, this.data});
-  final InvoiceDetailResponse? data;
+class _TimelineCard extends StatelessWidget {
+  const _TimelineCard({required this.data});
+
+  final InvoiceDetailResponse data;
 
   @override
   Widget build(BuildContext context) {
-    final fee = data?.additionalFee ?? [];
-    return Visibility(
-      visible: fee.isNotEmpty,
-      child: SizedBox(
-        width: context.width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Additional fee',
-              style: TextStyle(
-                color: const Color(0xFF4791CE),
-                fontSize: 16.sp,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w700,
-                height: 0,
+    final paid = data.status != 0;
+    return _SoftCard(
+      padding: EdgeInsets.all(3.5.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CardTitle(icon: Icons.access_time_rounded, title: 'Invoice Timeline'),
+          SizedBox(height: 1.7.h),
+          _TimelineStep(title: 'Invoice Created', subtitle: data.datePaid.toDDMMYYYY, active: true),
+          _TimelineStep(title: paid ? 'Payment Completed' : 'Payment Pending', active: paid),
+          _TimelineStep(title: 'Package Released', active: paid),
+        ],
+      ),
+    );
+  }
+}
+
+class _PaymentCard extends GetView<InvoiceDetailController> {
+  const _PaymentCard({required this.data});
+
+  final InvoiceDetailResponse data;
+
+  @override
+  Widget build(BuildContext context) {
+    final unpaid = data.status == 0;
+    return Container(
+      padding: EdgeInsets.all(3.5.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEAFBF2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFD7F4E4)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            unpaid ? 'Amount Due' : 'Amount Paid',
+            style: TextStyle(
+              color: const Color(0xFF0A9E69),
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          SizedBox(height: 1.4.h),
+          Text(
+            _amountWithCurrency(data.grandTotal),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: const Color(0xFF111D35),
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          SizedBox(height: 2.h),
+          SizedBox(
+            width: double.infinity,
+            height: 6.h,
+            child: ElevatedButton(
+              onPressed: unpaid ? () => controller.startPayment() : null,
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                backgroundColor: const Color(0xFF19B956),
+                disabledBackgroundColor: const Color(0xFFB9C8DA),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(9),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    unpaid ? 'Pay Now' : 'Paid',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  SizedBox(width: 2.w),
+                  Icon(Icons.arrow_forward_rounded, size: 3.h),
+                ],
               ),
             ),
-            SizedBox(height: 1.h),
-            ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              itemCount: fee.length,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final item = fee[index];
-                return Container(
-                  margin: EdgeInsets.only(bottom: 1.h),
-                  padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        item.name,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12.sp,
-                        ),
-                      ),
-                      Text(
-                        item.serviceFee,
-                        style: TextStyle(
-                          color: const Color(0xFF7C7C7C),
-                          fontSize: 10.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InvoiceActions extends StatelessWidget {
+  const _InvoiceActions({required this.data});
+
+  final InvoiceDetailResponse data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _BottomAction(
+            icon: Icons.download_rounded,
+            label: 'Download PDF',
+            onTap: () => FlushSnackbar.showSnackBar('PDF download is not available in app yet'),
+          ),
+        ),
+        SizedBox(width: 2.w),
+        Expanded(
+          child: _BottomAction(
+            icon: Icons.share_outlined,
+            label: 'Share Invoice',
+            onTap: () async {
+              await Clipboard.setData(
+                ClipboardData(text: 'Invoice #${data.invoiceNo} - ${_amountWithCurrency(data.grandTotal)}'),
+              );
+              FlushSnackbar.showSnackBar('Invoice details copied');
+            },
+          ),
+        ),
+        SizedBox(width: 2.w),
+        Expanded(
+          child: _BottomAction(
+            icon: Icons.headset_mic_outlined,
+            label: 'Contact Support',
+            onTap: () {
+              final bottomNavNestedID = find<BottomNavController>().bottomNavNestedID;
+              Get.toNamed(AppPages.supportTickets, id: bottomNavNestedID);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SoftCard extends StatelessWidget {
+  const _SoftCard({required this.child, required this.padding});
+
+  final Widget child;
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: padding,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFEEF3FA)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0F092341),
+            blurRadius: 18,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+class _CardTitle extends StatelessWidget {
+  const _CardTitle({
+    required this.icon,
+    required this.title,
+    this.filledIcon = false,
+  });
+
+  final IconData icon;
+  final String title;
+  final bool filledIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: filledIcon ? 3.8.h : 3.h,
+          height: filledIcon ? 3.8.h : 3.h,
+          decoration: filledIcon
+              ? const BoxDecoration(
+                  color: Color(0xFF0B6EDB),
+                  shape: BoxShape.circle,
+                )
+              : null,
+          child: Icon(
+            icon,
+            color: filledIcon ? Colors.white : const Color(0xFF0B6EDB),
+            size: filledIcon ? 2.2.h : 2.8.h,
+          ),
+        ),
+        SizedBox(width: 2.w),
+        Expanded(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: const Color(0xFF111D35),
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w900,
             ),
-            SizedBox(height: 1.h),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SmallLabel extends StatelessWidget {
+  const _SmallLabel(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: TextStyle(
+        color: const Color(0xFF111D35),
+        fontSize: 10.8.sp,
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+}
+
+class _KeyValueLine extends StatelessWidget {
+  const _KeyValueLine({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 1.2.h),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: const Color(0xFF151A27),
+                fontSize: 9.5.sp,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          SizedBox(width: 1.w),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: const Color(0xFF151A27),
+                fontSize: 9.5.sp,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChargeRow extends StatelessWidget {
+  const _ChargeRow({
+    required this.label,
+    this.amount,
+    this.amountText,
+  });
+
+  final String label;
+  final double? amount;
+  final String? amountText;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = amountText ?? _amountWithCurrency((amount ?? 0).toStringAsFixed(2));
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: .7.h),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: const Color(0xFF151A27),
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          SizedBox(width: 2.w),
+          Text(
+            text,
+            style: TextStyle(
+              color: const Color(0xFF151A27),
+              fontSize: 10.sp,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TimelineStep extends StatelessWidget {
+  const _TimelineStep({
+    required this.title,
+    this.subtitle,
+    required this.active,
+  });
+
+  final String title;
+  final String? subtitle;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 1.5.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 1.9.h,
+            height: 1.9.h,
+            margin: EdgeInsets.only(top: .2.h),
+            decoration: BoxDecoration(
+              color: active ? const Color(0xFF0B6EDB) : Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: active ? const Color(0xFF0B6EDB) : const Color(0xFFB9C4D3),
+                width: 2,
+              ),
+            ),
+          ),
+          SizedBox(width: 2.2.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: const Color(0xFF111D35),
+                    fontSize: 9.7.sp,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  SizedBox(height: .25.h),
+                  Text(
+                    subtitle!,
+                    style: TextStyle(
+                      color: const Color(0xFF586274),
+                      fontSize: 8.8.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomAction extends StatelessWidget {
+  const _BottomAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 6.3.h,
+      child: TextButton(
+        onPressed: onTap,
+        style: TextButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xFF0B63BF),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: Color(0xFFEEF3FA)),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 2.4.h),
+            SizedBox(height: .35.h),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: const Color(0xFF111D35),
+                fontSize: 8.8.sp,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ],
         ),
       ),
@@ -421,379 +1001,91 @@ class _AdditionalFee extends StatelessWidget {
   }
 }
 
-class InvoiceItem extends StatelessWidget {
-  final InvoiceDetail detail;
-  final InvoiceDetailResponse completeResponse;
-  const InvoiceItem({
-    super.key,
-    required this.detail,
-    required this.completeResponse,
-  });
+class _InvoiceDetailsLoading extends StatelessWidget {
+  const _InvoiceDetailsLoading();
 
   @override
   Widget build(BuildContext context) {
-    final freight = completeResponse.freightType.toLowerCase() == 'sendx'
-        ? 'Regular Air Freight'
-        : 'Express Air Freight';
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(
-                text: 'SR.#: ',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(4.w, 1.h, 4.w, 2.h),
+      child: Column(
+        children: [
+          for (final height in [7.8.h, 27.h, 12.h, 14.h, 24.h, 15.h])
+            Padding(
+              padding: EdgeInsets.only(bottom: 1.5.h),
+              child: ShimmerWidget(
+                radius: BorderRadius.circular(16),
+                child: SizedBox(width: double.infinity, height: height),
               ),
-              TextSpan(
-                text: '1',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
-          ),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: 0.7.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _SerialRowWidget(
-              title: 'HAWB',
-              subTitle: detail.manifestNo,
             ),
-            _SerialRowWidget(
-              title: freight,
-              subTitle: '${detail.packagePrice} JMD',
-            ),
-          ],
-        ),
-        SizedBox(height: 1.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _SerialRowWidget(
-              title: 'Custom Fee',
-              subTitle: '${detail.customFee} JMD',
-            ),
-            _SerialRowWidget(
-              title: 'Service Fee',
-              subTitle: '${detail.serviceFee} JMD',
-            ),
-          ],
-        ),
-        SizedBox(height: 1.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _SerialRowWidget(
-              title: 'Description',
-              subTitle: detail.packageDescription,
-            ),
-          ],
-        ),
-        SizedBox(height: 1.h),
-        _SerialRowWidget(
-          title: 'Amount',
-          subTitle: '${detail.packageTotal} JMD',
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-class _SerialRowWidget extends StatelessWidget {
-  const _SerialRowWidget({
-    required this.title,
-    required this.subTitle,
-  });
+class _InvoiceError extends StatelessWidget {
+  const _InvoiceError();
 
-  final String title;
-  final String subTitle;
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Text(
-          '$title :',
-          textAlign: TextAlign.start,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 12,
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(8.w),
+        child: const Text(
+          'Something went wrong try again later',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF181725),
+            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
-        Text(
-          subTitle,
-          textAlign: TextAlign.start,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-          ),
-        )
-      ],
+      ),
     );
   }
 }
 
-class _ShimmerWidget extends StatelessWidget {
-  const _ShimmerWidget();
+TextStyle _mutedStyle(BuildContext context) {
+  return TextStyle(
+    color: const Color(0xFF586274),
+    fontSize: 10.5.sp,
+    fontWeight: FontWeight.w500,
+    height: 1.25,
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 2.h),
-        Container(
-          alignment: Alignment.topLeft,
-          width: context.width,
-          margin: EdgeInsets.symmetric(horizontal: 4.w),
-          padding: EdgeInsets.symmetric(horizontal: 3.4.w, vertical: 2.h),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x19000000),
-                blurRadius: 4,
-                offset: Offset(0, 3),
-                spreadRadius: 0,
-              )
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ShimmerWidget(
-                height: 4.h,
-                radius: BorderRadius.circular(3),
-                width: context.width,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 0.5.h),
-              ShimmerWidget(
-                height: 3.h,
-                radius: BorderRadius.circular(3),
-                width: context.width,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 0.5.h),
-              ShimmerWidget(
-                height: 3.h,
-                radius: BorderRadius.circular(3),
-                width: context.width / 2,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 1.h),
-              ShimmerWidget(
-                height: 3.h,
-                radius: BorderRadius.circular(3),
-                width: context.width / 2,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 0.5.h),
-              ShimmerWidget(
-                height: 3.h,
-                radius: BorderRadius.circular(3),
-                width: context.width / 2,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 0.5.h),
-              ShimmerWidget(
-                height: 3.h,
-                radius: BorderRadius.circular(3),
-                width: context.width / 2,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 0.5.h),
-              ShimmerWidget(
-                height: 3.h,
-                radius: BorderRadius.circular(3),
-                width: context.width / 2,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 0.5.h),
-              ShimmerWidget(
-                height: 3.h,
-                radius: BorderRadius.circular(3),
-                width: context.width / 2,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 1.h),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                  SizedBox(width: 2.w),
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                ],
-              ),
-              SizedBox(height: 0.6.h),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                  SizedBox(width: 2.w),
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                ],
-              ),
-              SizedBox(height: 2.h),
-              ShimmerWidget(
-                height: 3.h,
-                radius: BorderRadius.circular(3),
-                width: context.width / 3,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 0.7.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                ],
-              ),
-              SizedBox(height: 1.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                ],
-              ),
-              SizedBox(height: 1.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 1.5,
-                    child: const SizedBox.shrink(),
-                  ),
-                ],
-              ),
-              SizedBox(height: 1.h),
-              ShimmerWidget(
-                height: 2.h,
-                radius: BorderRadius.circular(3),
-                width: context.width / 3,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 1.h),
-              ShimmerWidget(
-                height: 2.h,
-                radius: BorderRadius.circular(3),
-                width: context.width / 3,
-                child: const SizedBox.shrink(),
-              ),
-              SizedBox(height: 1.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                ],
-              ),
-              SizedBox(height: 0.5.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox.shrink(),
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                ],
-              ),
-              SizedBox(height: 1.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox.shrink(),
-                  ShimmerWidget(
-                    height: 2.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                ],
-              ),
-              SizedBox(height: 1.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ShimmerWidget(
-                    height: 4.h,
-                    radius: BorderRadius.circular(3),
-                    width: context.width / 3,
-                    child: const SizedBox.shrink(),
-                  ),
-                ],
-              )
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+String _amountWithCurrency(String value) {
+  final clean = value.trim();
+  if (clean.isEmpty) return 'JMD 0.00';
+  if (clean.toUpperCase().contains('JMD')) return clean;
+  return 'JMD $clean';
+}
+
+double _amount(String value) {
+  final normalized = value
+      .replaceAll(',', '')
+      .replaceAll(RegExp('jmd', caseSensitive: false), '')
+      .trim();
+  return double.tryParse(normalized) ?? 0;
+}
+
+double _storageDisplayAmount(InvoiceDetailResponse data) {
+  final payable = _amount(data.storageFeePayable);
+  if (payable > 0) return payable;
+  final total = _amount(data.storageFeeTotal);
+  if (total > 0) return total;
+  if (data.storageFeeWaived == 1) return _amount(data.storageFeeWaivedAmount);
+  return 0;
+}
+
+String _freightLabel(String freightType) {
+  return freightType.toLowerCase() == 'sendx'
+      ? 'Regular Air Freight'
+      : 'Express Air Freight';
+}
+
+String _weightText(int weight) {
+  if (weight <= 0) return '-';
+  return '$weight lbs';
 }

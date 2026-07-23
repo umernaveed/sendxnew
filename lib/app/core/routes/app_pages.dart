@@ -9,6 +9,7 @@ class AppPages {
   static const String addAuthorizeUser = '/addAuthorizeUser';
   static const String bottomNavNavigator = '/';
   static const String dashboard = '/';
+  static const String addresses = '/addresses';
   static const String authorizeUser = '/authorizeUser';
   static const String deliveryScreen = '/deliveryScreen';
   static const String purchase = '/purchase';

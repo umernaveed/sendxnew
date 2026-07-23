@@ -35,16 +35,16 @@ class Dashboard extends GetView<DashboardController> {
             if (state == null) return const SizedBox.shrink();
             return SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(3.8.w, 1.5.h, 3.8.w, 2.h),
+              padding: EdgeInsets.fromLTRB(4.w, 0.2.h, 4.w, 1.2.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const _DashboardTopBar(),
-                  SizedBox(height: 1.8.h),
+                  SizedBox(height: 0.9.h),
                   _HeroAccountCard(data: state),
-                  SizedBox(height: 1.6.h),
+                  SizedBox(height: 1.3.h),
                   _StatsStrip(data: state),
-                  SizedBox(height: 1.8.h),
+                  SizedBox(height: 1.5.h),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -53,12 +53,12 @@ class Dashboard extends GetView<DashboardController> {
                       Expanded(child: _ReferEarnCard(data: state)),
                     ],
                   ),
-                  SizedBox(height: 1.8.h),
+                  SizedBox(height: 1.5.h),
                   const _RecentPackagesCard(),
-                  SizedBox(height: 1.8.h),
+                  SizedBox(height: 1.5.h),
                   const _QuickActionsCard(),
                   if (state.accountManager.isNotEmpty) ...[
-                    SizedBox(height: 1.8.h),
+                    SizedBox(height: 1.5.h),
                     _ManagerCard(
                       manager: state.accountManager,
                       managerPhone: state.managerPhone,
@@ -83,16 +83,16 @@ class _DashboardTopBar extends StatelessWidget {
     return Row(
       children: [
         IconButton(
-          onPressed: () {},
+          onPressed: () => _goToNested(AppPages.account),
           icon: const Icon(Icons.menu_rounded, color: Color(0xFF07132D)),
-          iconSize: 31,
+          iconSize: 28,
           padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+          constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
         ),
         const Spacer(),
         SvgPicture.asset(
           'assets/svgs/app_logo_sendx.svg',
-          width: 29.w,
+          width: 21.w,
           fit: BoxFit.contain,
         ),
         const Spacer(),
@@ -105,9 +105,9 @@ class _DashboardTopBar extends StatelessWidget {
                 Icons.notifications_none_rounded,
                 color: Color(0xFF07132D),
               ),
-              iconSize: 31,
+              iconSize: 29,
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+              constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
             ),
             Positioned(
               right: -1,
@@ -122,7 +122,7 @@ class _DashboardTopBar extends StatelessWidget {
                   '3',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 10,
+                    fontSize: 9,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -149,9 +149,17 @@ class _HeroAccountCard extends GetView<DashboardController> {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(5.2.w, 3.h, 4.2.w, 2.8.h),
+      padding: EdgeInsets.fromLTRB(4.3.w, 2.15.h, 4.1.w, 2.15.h),
       decoration: BoxDecoration(
-        gradient: AppColors.brandGradient,
+        gradient: const LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            Color(0xFF176DF2),
+            Color(0xFF8F45C8),
+            Color(0xFFFF315B),
+          ],
+        ),
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
@@ -166,8 +174,8 @@ class _HeroAccountCard extends GetView<DashboardController> {
           Row(
             children: [
               Container(
-                width: 64,
-                height: 64,
+                width: 56,
+                height: 56,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -177,12 +185,12 @@ class _HeroAccountCard extends GetView<DashboardController> {
                   initials,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
-              SizedBox(width: 4.w),
+              SizedBox(width: 3.5.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,12 +201,12 @@ class _HeroAccountCard extends GetView<DashboardController> {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 22,
                         fontWeight: FontWeight.w800,
                         height: 1.05,
                       ),
                     ),
-                    SizedBox(height: .8.h),
+                    SizedBox(height: .55.h),
                     Row(
                       children: [
                         Flexible(
@@ -207,7 +215,7 @@ class _HeroAccountCard extends GetView<DashboardController> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.86),
-                              fontSize: 14,
+                              fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -221,7 +229,7 @@ class _HeroAccountCard extends GetView<DashboardController> {
                           child: Icon(
                             Icons.copy_rounded,
                             color: Colors.white.withOpacity(0.85),
-                            size: 18,
+                            size: 17,
                           ),
                         ),
                       ],
@@ -232,13 +240,13 @@ class _HeroAccountCard extends GetView<DashboardController> {
               Icon(
                 Icons.more_vert_rounded,
                 color: Colors.white.withOpacity(0.9),
-                size: 29,
+                size: 27,
               ),
             ],
           ),
-          SizedBox(height: 2.3.h),
+          SizedBox(height: 1.55.h),
           Divider(color: Colors.white.withOpacity(0.14), height: 1),
-          SizedBox(height: 2.3.h),
+          SizedBox(height: 1.55.h),
           Row(
             children: [
               Expanded(
@@ -255,7 +263,7 @@ class _HeroAccountCard extends GetView<DashboardController> {
               Container(
                 width: 1,
                 height: 9.8.h,
-                margin: EdgeInsets.symmetric(horizontal: 4.w),
+                margin: EdgeInsets.symmetric(horizontal: 2.5.w),
                 color: Colors.white.withOpacity(0.22),
               ),
               Expanded(
@@ -310,7 +318,7 @@ class _HeroMetric extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.85),
-                  fontSize: 13,
+                  fontSize: 11.2,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -319,7 +327,7 @@ class _HeroMetric extends StatelessWidget {
             Icon(icon, color: Colors.white.withOpacity(0.75), size: 17),
           ],
         ),
-        SizedBox(height: .8.h),
+        SizedBox(height: .6.h),
         RichText(
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -329,7 +337,7 @@ class _HeroMetric extends StatelessWidget {
                 text: value,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 25,
+                  fontSize: 21,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -337,19 +345,19 @@ class _HeroMetric extends StatelessWidget {
                 text: ' $suffix',
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.9),
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ],
           ),
         ),
-        SizedBox(height: 1.8.h),
+        SizedBox(height: 1.35.h),
         InkWell(
           borderRadius: BorderRadius.circular(9),
           onTap: onTap,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.2.h),
+            padding: EdgeInsets.symmetric(horizontal: 2.3.w, vertical: 1.0.h),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.18),
               borderRadius: BorderRadius.circular(9),
@@ -357,8 +365,8 @@ class _HeroMetric extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(buttonIcon, color: Colors.white, size: 20),
-                SizedBox(width: 1.6.w),
+                Icon(buttonIcon, color: Colors.white, size: 18),
+                SizedBox(width: 1.2.w),
                 Flexible(
                   child: Text(
                     buttonLabel,
@@ -366,7 +374,7 @@ class _HeroMetric extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 13,
+                      fontSize: 11.5,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -388,7 +396,7 @@ class _StatsStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SoftCard(
-      padding: EdgeInsets.symmetric(vertical: 2.2.h, horizontal: 2.5.w),
+      padding: EdgeInsets.symmetric(vertical: 1.8.h, horizontal: 2.1.w),
       child: Row(
         children: [
           _StatItem(
@@ -449,26 +457,26 @@ class _StatItem extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 52,
-            height: 52,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: iconBg,
               borderRadius: BorderRadius.circular(13),
             ),
-            child: Icon(icon, color: iconColor, size: 31),
+            child: Icon(icon, color: iconColor, size: 28),
           ),
-          SizedBox(height: 1.2.h),
+          SizedBox(height: 0.9.h),
           Text(
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Color(0xFF07132D),
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
           ),
-          SizedBox(height: .4.h),
+          SizedBox(height: .3.h),
           Text(
             label,
             textAlign: TextAlign.center,
@@ -476,7 +484,7 @@ class _StatItem extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Color(0xFF222538),
-              fontSize: 10.5,
+              fontSize: 10,
               fontWeight: FontWeight.w500,
               height: 1.2,
             ),
@@ -505,7 +513,7 @@ class _RewardsWalletCard extends StatelessWidget {
         (targetPackages - data.packageCount).clamp(0, targetPackages).toInt();
 
     return _SoftCard(
-      padding: EdgeInsets.all(3.w),
+      padding: EdgeInsets.all(2.8.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -514,13 +522,13 @@ class _RewardsWalletCard extends StatelessWidget {
             title: 'Rewards Wallet',
             color: const Color(0xFF078A39),
           ),
-          SizedBox(height: 2.4.h),
+          SizedBox(height: 1.7.h),
           _AmountLine(amount: '${data.memberPoints.toStringAsFixed(2)} USD', label: 'Rewards Balance'),
-          SizedBox(height: 1.4.h),
+          SizedBox(height: 1.1.h),
           _AmountLine(amount: '${rewardJmd.toStringAsFixed(2)} JMD', label: 'Rewards Balance'),
-          SizedBox(height: 2.h),
+          SizedBox(height: 1.5.h),
           Divider(color: AppColors.border.withOpacity(.8)),
-          SizedBox(height: 1.2.h),
+          SizedBox(height: .9.h),
           Row(
             children: [
               Text(
@@ -542,17 +550,17 @@ class _RewardsWalletCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: .9.h),
+          SizedBox(height: .65.h),
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: LinearProgressIndicator(
-              minHeight: 9,
+              minHeight: 7,
               value: progress,
               color: const Color(0xFF139EF2),
               backgroundColor: const Color(0xFFE6E8EC),
             ),
           ),
-          SizedBox(height: 1.2.h),
+          SizedBox(height: .9.h),
           Text(
             'Ship $remainingPackages more packages to earn ${data.setting.rewardAmount} USD',
             maxLines: 2,
@@ -578,7 +586,7 @@ class _ReferEarnCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SoftCard(
-      padding: EdgeInsets.all(3.w),
+      padding: EdgeInsets.all(2.8.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -587,19 +595,19 @@ class _ReferEarnCard extends StatelessWidget {
             title: 'Refer & Earn',
             color: const Color(0xFF4E1499),
           ),
-          SizedBox(height: 2.7.h),
+          SizedBox(height: 1.8.h),
           Text(
             'Earn ${data.setting.referralAmount.toStringAsFixed(2)} USD on ${data.setting.reffralPackages} packages shipped or reach ${data.setting.reffralWeight}lb weight.',
             maxLines: 4,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Color(0xFF222538),
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
               height: 1.25,
             ),
           ),
-          SizedBox(height: 2.4.h),
+          SizedBox(height: 1.7.h),
           Row(
             children: [
               Expanded(
@@ -637,18 +645,18 @@ class _RecentPackagesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final packagesController = Get.find<DashboardPackagesController>();
     return _SoftCard(
-      padding: EdgeInsets.fromLTRB(4.w, 2.h, 4.w, 1.2.h),
+      padding: EdgeInsets.fromLTRB(3.5.w, 1.6.h, 3.5.w, 1.h),
       child: Column(
         children: [
           Row(
             children: [
-              const Icon(Icons.inventory_2_outlined, color: Color(0xFF07132D), size: 28),
+              const Icon(Icons.inventory_2_outlined, color: Color(0xFF07132D), size: 25),
               SizedBox(width: 2.5.w),
               const Text(
                 'Recent Packages',
                 style: TextStyle(
                   color: Color(0xFF07132D),
-                  fontSize: 17,
+                  fontSize: 15,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -672,7 +680,7 @@ class _RecentPackagesCard extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 1.5.h),
+              padding: EdgeInsets.symmetric(vertical: 1.1.h),
                   child: const ShimmerWidget(
                     child: SizedBox(height: 95, width: double.infinity),
                   ),
@@ -687,7 +695,7 @@ class _RecentPackagesCard extends StatelessWidget {
                     'No recent packages found',
                     style: TextStyle(
                       color: AppColors.muted,
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -727,17 +735,17 @@ class _RecentPackageRow extends StatelessWidget {
           ? () => _goToNested(AppPages.invoiceDetails, arguments: package.invoiceNo.toString())
           : null,
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 1.1.h),
+        padding: EdgeInsets.symmetric(vertical: .85.h),
         child: Row(
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
                 color: bg,
                 borderRadius: BorderRadius.circular(11),
               ),
-              child: Icon(Icons.inventory_2_outlined, color: color, size: 30),
+              child: Icon(Icons.inventory_2_outlined, color: color, size: 26),
             ),
             SizedBox(width: 3.w),
             Expanded(
@@ -750,7 +758,7 @@ class _RecentPackageRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Color(0xFF07132D),
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -764,7 +772,7 @@ class _RecentPackageRow extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: Color(0xFF666A76),
-                            fontSize: 11,
+                            fontSize: 10.5,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -776,7 +784,7 @@ class _RecentPackageRow extends StatelessWidget {
                         package.createdAt.toDDMMYYYY,
                         style: const TextStyle(
                           color: Color(0xFF666A76),
-                          fontSize: 11,
+                          fontSize: 10.5,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -786,7 +794,7 @@ class _RecentPackageRow extends StatelessWidget {
               ),
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 2.5.w, vertical: .9.h),
+              padding: EdgeInsets.symmetric(horizontal: 2.2.w, vertical: .7.h),
               decoration: BoxDecoration(
                 color: ready ? const Color(0xFFE9FBEF) : const Color(0xFFEFF4FF),
                 borderRadius: BorderRadius.circular(8),
@@ -795,7 +803,7 @@ class _RecentPackageRow extends StatelessWidget {
                 package.statusName.isNotEmpty ? package.statusName : 'In Transit',
                 style: TextStyle(
                   color: ready ? const Color(0xFF0DAA3B) : const Color(0xFF146FE3),
-                  fontSize: 11,
+                  fontSize: 10.5,
                   fontWeight: FontWeight.w700,
                 ),
               ),

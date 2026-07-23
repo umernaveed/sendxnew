@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:sendx/app/core/get_di.dart';
@@ -7,15 +8,11 @@ import 'package:sendx/app/core/routes/app_pages.dart';
 import 'package:sendx/app/extensions/string_ext.dart';
 import 'package:sendx/data/models/get_all_package/get_all_package.dart';
 import 'package:sendx/presentation/account/controllers/get_delivery_packages_controller.dart';
-import 'package:sendx/presentation/account/views/account_screen.dart';
-import 'package:sendx/presentation/auth/widgets/auth_app_bar.dart';
-import 'package:sendx/presentation/auth/widgets/text_field.dart';
-import 'package:sendx/presentation/authorize/views/authorize_screen.dart';
 import 'package:sendx/presentation/base_screen.dart';
 import 'package:sendx/presentation/bottom_nav/controllers/bottom_nav_controller.dart';
+import 'package:sendx/presentation/widgets/buttons/download_button.dart';
 import 'package:sizer/sizer.dart';
 
-/// track packages
 class AccountTrackePackages extends GetView<AllDeliveryPackagesController> {
   const AccountTrackePackages({super.key});
 
@@ -24,257 +21,565 @@ class AccountTrackePackages extends GetView<AllDeliveryPackagesController> {
     return BaseScreen(
       wrapWithAnnotatedRegion: true,
       value: SystemUiOverlayStyle.dark,
-      backgroundColor: const Color(0xFFFAF4F2).withOpacity(0.4),
-      appBar: const AuthCustomAppBar.withSmallAppLogo(
-        backButtonVisible: true,
-        usingNavigator: true,
-      ),
-      body: Container(
-        width: context.width,
-        margin:
-            EdgeInsets.only(left: 4.5.w, right: 4.5.w, top: 4.h, bottom: 2.h),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(
-            Radius.circular(3),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x19000000),
-              blurRadius: 4,
-              offset: Offset(0, 3),
-              spreadRadius: 1.8,
-            )
-          ],
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
-          child: Column(
-            children: [
-              SizedBox(height: 2.h),
-              SearchField(
+      showGradients: false,
+      backgroundColor: const Color(0xFFF8FBFF),
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            const _PackagesHeader(),
+            Padding(
+              padding: EdgeInsets.fromLTRB(4.w, 1.5.h, 4.w, 1.8.h),
+              child: _PackageSearchField(
                 controller: controller.textEditingController,
               ),
-              SizedBox(height: 2.h),
-              const AppDivider(),
-              SizedBox(height: 2.h),
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () => Future.sync(
-                    () => controller.pagingController.refresh(),
-                  ),
-                  child: PagedListView<int, GetAllPackage>.separated(
-                    pagingController: controller.pagingController,
-                    padding: EdgeInsets.zero,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    builderDelegate: PagedChildBuilderDelegate(
-                      animateTransitions: true,
-                      transitionDuration: 500.milliseconds,
-                      itemBuilder: (context, item, index) =>
-                          _InvoicesItemWidget(item),
-                    ),
-                    separatorBuilder: (context, index) => Padding(
-                      padding: EdgeInsets.only(top: 2.h, bottom: 2.h),
-                      child: const AppDivider(),
-                    ),
-                  ),
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                color: const Color(0xFF176DF2),
+                onRefresh: () => Future.sync(
+                  () => controller.pagingController.refresh(),
                 ),
-              )
-            ],
-          ),
+                child: PagedListView<int, GetAllPackage>.separated(
+                  pagingController: controller.pagingController,
+                  padding: EdgeInsets.fromLTRB(4.w, 0, 4.w, 2.4.h),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  builderDelegate: PagedChildBuilderDelegate<GetAllPackage>(
+                    animateTransitions: true,
+                    transitionDuration: 350.milliseconds,
+                    firstPageProgressIndicatorBuilder: (_) =>
+                        const Center(child: CircularProgressIndicator()),
+                    newPageProgressIndicatorBuilder: (_) => Padding(
+                      padding: EdgeInsets.symmetric(vertical: 2.h),
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                    noItemsFoundIndicatorBuilder: (_) =>
+                        const _EmptyPackages(),
+                    itemBuilder: (context, item, index) {
+                      return _PackageCard(item: item);
+                    },
+                  ),
+                  separatorBuilder: (context, index) => SizedBox(height: 1.8.h),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
   }
 }
 
-class _InvoicesItemWidget extends StatelessWidget {
-  const _InvoicesItemWidget(this.item);
+class _PackagesHeader extends StatelessWidget {
+  const _PackagesHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 11.h,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            left: 3.8.w,
+            top: 1.5.h,
+            child: Container(
+              width: 8.7.h,
+              height: 8.7.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x10092341),
+                    blurRadius: 18,
+                    offset: Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                onPressed: () {
+                  final bottomNavNestedID =
+                      find<BottomNavController>().bottomNavNestedID;
+                  Get.back(id: bottomNavNestedID);
+                },
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: const Color(0xFF07132D),
+                  size: 3.2.h,
+                ),
+              ),
+            ),
+          ),
+          SvgPicture.asset(
+            'assets/svgs/app_logo_sendx.svg',
+            width: 29.w,
+            fit: BoxFit.contain,
+          ),
+          Positioned(
+            right: 4.w,
+            bottom: .2.h,
+            child: Opacity(
+              opacity: .08,
+              child: Icon(
+                Icons.local_shipping_rounded,
+                color: const Color(0xFF176DF2),
+                size: 10.h,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PackageSearchField extends StatelessWidget {
+  const _PackageSearchField({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 7.3.h,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: const Color(0xFFE5EDF7)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0F092341),
+            blurRadius: 18,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          SizedBox(width: 4.w),
+          Icon(
+            Icons.search_rounded,
+            color: const Color(0xFF176DF2),
+            size: 3.5.h,
+          ),
+          SizedBox(width: 3.2.w),
+          Expanded(
+            child: TextFormField(
+              controller: controller,
+              onTapOutside: (_) => FocusScope.of(context).unfocus(),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                isDense: true,
+                hintText: 'Search by HAWB / Tracking / Package No.',
+                hintStyle: TextStyle(
+                  color: const Color(0xFF8E95A3),
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              style: TextStyle(
+                color: const Color(0xFF111D35),
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          SizedBox(width: 2.w),
+        ],
+      ),
+    );
+  }
+}
+
+class _PackageCard extends GetView<AllDeliveryPackagesController> {
+  const _PackageCard({required this.item});
+
   final GetAllPackage item;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final hasInvoice = item.isInvoice == 1;
+    return Container(
+      padding: EdgeInsets.fromLTRB(3.5.w, 2.2.h, 3.5.w, 1.7.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(color: const Color(0xFFEEF3FA)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0F092341),
+            blurRadius: 20,
+            offset: Offset(0, 9),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _PackageLine(
+                  icon: Icons.calendar_month_outlined,
+                  iconColor: const Color(0xFF8992A3),
+                  label: 'Date:',
+                  value: item.createdAt.toDDMMYYYY,
+                ),
+              ),
+              SizedBox(width: 4.w),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _CompactValue(label: 'Quantity:', value: item.quantity.toString()),
+                  SizedBox(height: 1.2.h),
+                  _CompactValue(label: 'Weight:', value: _weightText(item.weight)),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: 2.h),
+          _PackageLine(
+            icon: Icons.work_outline_rounded,
+            iconColor: const Color(0xFF176DF2),
+            label: 'HAWB:',
+            value: _firstNonEmpty([item.manifestNo, item.trackingNo]),
+          ),
+          _Divider(),
+          _PackageLine(
+            icon: Icons.inventory_2_outlined,
+            iconColor: const Color(0xFFD88B2B),
+            label: 'Carrier:',
+            value: _firstNonEmpty([item.courier, item.merchant]),
+          ),
+          _Divider(),
+          _PackageLine(
+            icon: Icons.location_on_outlined,
+            iconColor: const Color(0xFF16A8D7),
+            label: 'Carrier Tracking No:',
+            value: _firstNonEmpty([item.supplierTrackingNo, item.trackingNo]),
+          ),
+          _Divider(),
+          _PackageLine(
+            icon: Icons.sell_outlined,
+            iconColor: const Color(0xFF344055),
+            label: 'Package No:',
+            value: item.pkNo.isEmpty ? '-' : item.pkNo,
+          ),
+          _Divider(),
+          _PackageLine(
+            icon: Icons.local_shipping_outlined,
+            iconColor: const Color(0xFF16A8D7),
+            label: 'Shipment Status:',
+            customValue: _StatusChip(status: item.statusName),
+          ),
+          _Divider(),
+          _PackageLine(
+            icon: Icons.description_outlined,
+            iconColor: const Color(0xFF344055),
+            label: 'Description:',
+            value: item.itemDescription,
+          ),
+          if (hasInvoice) ...[
+            SizedBox(height: 1.7.h),
+            SizedBox(
+              width: double.infinity,
+              height: 5.9.h,
+              child: ElevatedButton(
+                onPressed: () {
+                  final bottomNavNestedID =
+                      find<BottomNavController>().bottomNavNestedID;
+                  Get.toNamed(
+                    AppPages.invoiceDetails,
+                    id: bottomNavNestedID,
+                    arguments: item.invoiceNo.toString(),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: const Color(0xFF176DF2),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Spacer(),
+                    Text(
+                      'Invoice Detail',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13.4.sp,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const Spacer(),
+                    Icon(Icons.chevron_right_rounded, size: 3.4.h),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          SizedBox(height: 1.2.h),
+          _InvoiceFileAction(
+            item: item,
+            onDone: () {
+              if (Get.isDialogOpen ?? false) Get.back();
+              controller.onUploadingInvoiceDone(item.packegId);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InvoiceFileAction extends StatelessWidget {
+  const _InvoiceFileAction({
+    required this.item,
+    required this.onDone,
+  });
+
+  final GetAllPackage item;
+  final VoidCallback onDone;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasFile = item.invoice.trim().isNotEmpty;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 3.2.w, vertical: 1.05.h),
+      decoration: BoxDecoration(
+        color: hasFile ? const Color(0xFFEAF4FF) : const Color(0xFFFFF6E8),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: hasFile ? const Color(0xFFD4E6FF) : const Color(0xFFFFE2B8),
+        ),
+      ),
+      child: Row(
+        children: [
+          DownloadButton(
+            showDownloadButton: hasFile,
+            id: item.packegId,
+            fileURL: item.invoice,
+            onDone: onDone,
+          ),
+          SizedBox(width: 3.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  hasFile ? 'Invoice File' : 'Upload Invoice File',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: const Color(0xFF111D35),
+                    fontSize: 11.5.sp,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                SizedBox(height: 0.2.h),
+                Text(
+                  hasFile
+                      ? 'Tap the icon to download the uploaded file.'
+                      : 'Tap the icon to attach a file for this package.',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: const Color(0xFF667085),
+                    fontSize: 9.2.sp,
+                    fontWeight: FontWeight.w500,
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PackageLine extends StatelessWidget {
+  const _PackageLine({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    this.value,
+    this.customValue,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String? value;
+  final Widget? customValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+        SizedBox(
+          width: 7.2.w,
+          child: Icon(
+            icon,
+            color: iconColor,
+            size: 2.8.h,
+          ),
+        ),
+        SizedBox(width: 2.2.w),
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: customValue == null ? 46.w : 44.w,
+          ),
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: const Color(0xFF111D35),
+              fontSize: 12.1.sp,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        SizedBox(width: 1.7.w),
+        customValue ??
             Expanded(
-              child: _TrackPackagesItemKeyValueBuilder(
-                subTitle: item.createdAt.toDDMMYYYY,
-                title: 'Date:',
-                mainAxisAlignment: MainAxisAlignment.start,
-                spaceBTW: 1.w,
+              child: Text(
+                value ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: const Color(0xFF176DF2),
+                  fontSize: 12.2.sp,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
-            Expanded(
-              child: _TrackPackagesItemKeyValueBuilder(
-                subTitle: item.quantity,
-                title: 'Quantity:',
-                mainAxisAlignment: MainAxisAlignment.end,
-                spaceBTW: 1.w,
-              ),
+      ],
+    );
+  }
+}
+
+class _CompactValue extends StatelessWidget {
+  const _CompactValue({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: '$label  ',
+            style: const TextStyle(
+              color: Color(0xFF111D35),
+              fontWeight: FontWeight.w800,
             ),
-          ],
-        ),
-        SizedBox(height: 1.5.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: _TrackPackagesItemKeyValueBuilder(
-                subTitle: item.manifestNo,
-                title: 'HAWB:',
-                mainAxisAlignment: MainAxisAlignment.start,
-                spaceBTW: 1.w,
-              ),
+          ),
+          TextSpan(
+            text: value,
+            style: const TextStyle(
+              color: Color(0xFF176DF2),
+              fontWeight: FontWeight.w800,
             ),
-            Expanded(
-              child: _TrackPackagesItemKeyValueBuilder(
-                subTitle: '${item.weight}  ',
-                title: 'Weight:',
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                spaceBTW: 1.w,
-              ),
-            ),
-            // Expanded(
-            //   child: _TrackPackagesItemKeyValueBuilder(
-            //     subTitle: item.trackingNo,
-            //     title: 'Carrier Tracking:',
-            //     mainAxisAlignment: MainAxisAlignment.end,
-            //     spaceBTW: 1.w,
-            //   ),
-            // ),
-          ],
+          ),
+        ],
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(fontSize: 11.5.sp),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.status});
+
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    final normalized = status.trim().isEmpty ? 'Ready for Pickup' : status.trim();
+    final isPaid = normalized.toLowerCase().contains('paid');
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: .8.h),
+      decoration: BoxDecoration(
+        color: isPaid ? const Color(0xFFE7F8F1) : const Color(0xFFEAF4FF),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        normalized,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: isPaid ? const Color(0xFF10A66B) : const Color(0xFF176DF2),
+          fontSize: 11.2.sp,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 9.4.w, top: 1.35.h, bottom: 1.35.h),
+      child: const Divider(
+        color: Color(0xFFE5EBF4),
+        height: 1,
+      ),
+    );
+  }
+}
+
+class _EmptyPackages extends StatelessWidget {
+  const _EmptyPackages();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        SizedBox(height: 14.h),
+        Icon(
+          Icons.inventory_2_outlined,
+          color: const Color(0xFF9FB7D1),
+          size: 8.h,
         ),
         SizedBox(height: 1.5.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: _TrackPackagesItemKeyValueBuilder(
-                subTitle: item.courier,
-                title: 'Carrier:',
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                spaceBTW: 1.w,
-              ),
-            ),
-            // Expanded(
-            //   child: _TrackPackagesItemKeyValueBuilder(
-            //     subTitle: '${item.weight}  ',
-            //     title: 'Weight:',
-            //     mainAxisSize: MainAxisSize.max,
-            //     mainAxisAlignment: MainAxisAlignment.end,
-            //     spaceBTW: 1.w,
-            //   ),
-            // ),
-          ],
-        ),
-        SizedBox(height: 1.5.h),
-        _TrackPackagesItemKeyValueBuilder(
-          subTitle: item.trackingNo,
-          title: 'Carrier Tracking No:',
-          mainAxisAlignment: MainAxisAlignment.start,
-          spaceBTW: 1.w,
-        ),
-        SizedBox(height: 1.5.h),
-        _TrackPackagesItemKeyValueBuilder(
-          subTitle: item.pkNo,
-          title: 'Package No:',
-          mainAxisAlignment: MainAxisAlignment.start,
-          spaceBTW: 1.w,
-        ),
-        SizedBox(height: 1.5.h),
-        _TrackPackagesItemKeyValueBuilder(
-          subTitle: item.statusName,
-          title: 'Shipment Status:',
-          mainAxisAlignment: MainAxisAlignment.start,
-          spaceBTW: 1.w,
-        ),
-        SizedBox(height: 1.5.h),
-        _TrackPackagesItemKeyValueBuilder(
-          subTitle: item.itemDescription,
-          title: 'Description:',
-          mainAxisAlignment: MainAxisAlignment.start,
-          spaceBTW: 1.w,
-        ),
-        SizedBox(height: 1.3.h),
-        SizedBox(height: 1.3.h),
-        ActionButton(
-          title: 'Invoice Detail',
-          width: context.width,
-          height: 5.h,
-          color: item.isInvoice == 1
-              ? const Color(0xFF4791CE)
-              : Colors.grey.withOpacity(0.4),
-          onTap: () {
-            if (item.isInvoice == 0) return;
-            final bottomNavNestedID =
-                find<BottomNavController>().bottomNavNestedID;
-            Get.toNamed(
-              AppPages.invoiceDetails,
-              id: bottomNavNestedID,
-              arguments: item.invoiceNo.toString(),
-            );
-          },
+        Text(
+          'No packages found',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: const Color(0xFF334155),
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ],
     );
   }
 }
 
-class _TrackPackagesItemKeyValueBuilder extends StatelessWidget {
-  final String title;
-  final String? subTitle;
-  final CrossAxisAlignment crossAxisAlignment;
-  final MainAxisAlignment mainAxisAlignment;
-  final double spaceBTW;
-  final MainAxisSize mainAxisSize;
-  final Widget? customSubTitle;
-  const _TrackPackagesItemKeyValueBuilder({
-    required this.title,
-    this.subTitle,
-    this.crossAxisAlignment = CrossAxisAlignment.start,
-    this.mainAxisAlignment = MainAxisAlignment.center,
-    this.spaceBTW = 0,
-    this.mainAxisSize = MainAxisSize.max,
-    this.customSubTitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: crossAxisAlignment,
-      mainAxisAlignment: mainAxisAlignment,
-      mainAxisSize: mainAxisSize,
-      children: [
-        Text(
-          title,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 9.sp,
-            fontWeight: FontWeight.w600,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        SizedBox(width: spaceBTW),
-        customSubTitle ??
-            Text(
-              subTitle ?? '',
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 9.sp,
-                fontWeight: FontWeight.w400,
-                overflow: TextOverflow.ellipsis,
-              ),
-            )
-      ],
-    );
+String _firstNonEmpty(List<String> values) {
+  for (final value in values) {
+    if (value.trim().isNotEmpty) return value.trim();
   }
+  return '-';
+}
+
+String _weightText(String weight) {
+  final clean = weight.trim();
+  if (clean.isEmpty) return '-';
+  if (clean.toLowerCase().contains('lb')) return clean;
+  return '$clean lb';
 }

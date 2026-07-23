@@ -26,6 +26,7 @@ import 'package:sendx/presentation/authorize/views/authorize_screen.dart';
 import 'package:sendx/presentation/bottom_nav/bindings/bottom_binding.dart';
 import 'package:sendx/presentation/bottom_nav/views/bottom_nav.dart';
 import 'package:sendx/presentation/dashboard/bindings/dashboard_binding.dart';
+import 'package:sendx/presentation/dashboard/views/address.dart';
 import 'package:sendx/presentation/dashboard/views/dashboard_main_screen.dart';
 import 'package:sendx/presentation/delivery/bindings/delivery_binding.dart';
 import 'package:sendx/presentation/delivery/bindings/address_search_binding.dart';
@@ -94,6 +95,12 @@ class AppRoutes {
     GetPage(
       name: AppPages.dashboard,
       page: () => const DashboardMainScreen(),
+      binding: DashboardBinding(),
+      curve: Curves.ease,
+    ),
+    GetPage(
+      name: AppPages.addresses,
+      page: () => const Address(),
       binding: DashboardBinding(),
       curve: Curves.ease,
     ),
