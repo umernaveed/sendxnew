@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:sendx/app/core/theme/app_colors.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:sendx/app/core/get_di.dart';
+import 'package:sendx/app/core/routes/app_pages.dart';
+import 'package:sendx/app/core/theme/app_colors.dart';
+import 'package:sendx/app/extensions/string_ext.dart';
 import 'package:sendx/app/util/flush_snackbar.dart';
 import 'package:sendx/data/models/dashboard_data/dashboard_data.dart';
+import 'package:sendx/data/models/get_packages_ready_for_pickup_response/get_packages_ready_for_pickup_response.dart';
+import 'package:sendx/domain/repositories/local_repository.dart';
+import 'package:sendx/presentation/bottom_nav/controllers/bottom_nav_controller.dart';
 import 'package:sendx/presentation/dashboard/controllers/dashboard_controller.dart';
-import 'package:sendx/presentation/widgets/lasco_button.dart';
+import 'package:sendx/presentation/dashboard/controllers/dashboard_packages_controller.dart';
 import 'package:sendx/presentation/widgets/shimmer_widget.dart';
 import 'package:sizer/sizer.dart';
 
@@ -17,87 +24,49 @@ class Dashboard extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: controller.refreshData,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
+      child: SafeArea(
         child: controller.obx(
-          onLoading: const _ShimmerWidget(),
-          onEmpty: const Center(
-            child: Text(
-              'No data found',
-              style: TextStyle(
-                color: Color(0xFF181725),
-                fontSize: 26,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          onError: (error) => SizedBox(
-            height: context.height / 1.5,
-            width: context.width,
-            child: const Center(
-              child: Text(
-                'Something went wrong try again late',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFF181725),
-                  fontSize: 26,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
+          onLoading: const _DashboardLoading(),
+          onEmpty: const _DashboardEmpty(),
+          onError: (error) => const _DashboardEmpty(
+            message: 'Something went wrong try again later',
           ),
           (state) {
             if (state == null) return const SizedBox.shrink();
-            return Column(
-              children: [
-                SizedBox(height: 2.h),
-                ManagerWidget(
-                  manager: state.accountManager,
-                  managerPhone: state.managerPhone,
-                ),
-                LascoButton(
-                  onTap: () async {
-                    await controller.startPayment(
-                      packageIDs: state.packageIds,
-                      invoiceIDs: state.invoiceIds,
-                      balance: state.outstandingBalance,
-                    );
-                  },
-                  margin: EdgeInsets.symmetric(
-                    vertical: 1.h,
-                    horizontal: 3.w,
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(3.8.w, 1.5.h, 3.8.w, 2.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const _DashboardTopBar(),
+                  SizedBox(height: 1.8.h),
+                  _HeroAccountCard(data: state),
+                  SizedBox(height: 1.6.h),
+                  _StatsStrip(data: state),
+                  SizedBox(height: 1.8.h),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _RewardsWalletCard(data: state)),
+                      SizedBox(width: 3.w),
+                      Expanded(child: _ReferEarnCard(data: state)),
+                    ],
                   ),
-                ),
-                SizedBox(height: 1.h),
-                _QRWidget(state.referralCode),
-                SizedBox(height: 1.8.h),
-                _ReferralBonusWidget(state),
-                SizedBox(height: 1.8.h),
-                _RewardBalanceWidget(state),
-                SizedBox(height: 1.8.h),
-                _InfoBuilderWidget(data: state),
-                SizedBox(height: 1.8.h),
-                _DashboardCard(
-                  title: state.wherehouse.toString(),
-                  subTitle: 'TOTAL PACKAGES AT MIAMI WAREHOUSE',
-                ),
-                SizedBox(height: 1.8.h),
-                _DashboardCard(
-                  title: state.inTransit.toString(),
-                  subTitle: 'TOTAL PACKAGES IN TRANSIT',
-                ),
-                SizedBox(height: 1.8.h),
-                _DashboardCard(
-                  title: state.outstandingPackage.toString(),
-                  subTitle: 'TOTAL PACKAGE READY FOR PICK UP',
-                ),
-                SizedBox(height: 1.8.h),
-                _DashboardCard(
-                  title: state.outstandingBalance,
-                  subTitle: 'TOTAL  OUTSTANDING BALANCE',
-                ),
-                SizedBox(height: 2.8.h),
-              ],
+                  SizedBox(height: 1.8.h),
+                  const _RecentPackagesCard(),
+                  SizedBox(height: 1.8.h),
+                  const _QuickActionsCard(),
+                  if (state.accountManager.isNotEmpty) ...[
+                    SizedBox(height: 1.8.h),
+                    _ManagerCard(
+                      manager: state.accountManager,
+                      managerPhone: state.managerPhone,
+                    ),
+                  ],
+                  SizedBox(height: 1.5.h),
+                ],
+              ),
             );
           },
         ),
@@ -106,155 +75,967 @@ class Dashboard extends GetView<DashboardController> {
   }
 }
 
-class _ShimmerWidget extends StatelessWidget {
-  const _ShimmerWidget();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      itemCount: 4,
-      shrinkWrap: true,
-      padding: EdgeInsets.only(top: 4.h),
-      separatorBuilder: (context, index) => SizedBox(height: 1.8.h),
-      itemBuilder: (context, index) {
-        return const _DashboardShimmerCard();
-      },
-    );
-  }
-}
-
-class _RewardBalanceWidget extends StatelessWidget {
-  const _RewardBalanceWidget(this.data);
-  final DashboardData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final points = data.memberPoints;
-    final rate = data.setting.usRate;
-    final validRate = num.tryParse(rate) ?? 0;
-    final jmdPoints = points * validRate;
-    return Container(
-      width: context.width,
-      padding: EdgeInsets.all(2.h),
-      margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.cyan.withOpacity(0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-          )
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Rewarded Balance",
-            style: TextStyle(
-              color: AppColors.ink,
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          SizedBox(height: 1.h),
-          _BalanceWidget(
-            title: "Rewards Balance of : ",
-            balance: '$points USD',
-          ),
-          SizedBox(height: 0.5.h),
-          _BalanceWidget(
-            title: "Rewards Balance of : ",
-            balance: '$jmdPoints JMD',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ReferralBonusWidget extends StatelessWidget {
-  const _ReferralBonusWidget(this.data);
-  final DashboardData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final balance = data.availableBalance;
-    final rate = data.setting.usRate;
-    final validRate = num.tryParse(rate) ?? 0;
-    final jmdBalance = balance * validRate;
-    return Container(
-      width: context.width,
-      padding: EdgeInsets.all(2.h),
-      margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.coral.withOpacity(0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-          )
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Referral Bonus",
-            style: TextStyle(
-              color: AppColors.ink,
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          SizedBox(height: 1.h),
-          _BalanceWidget(
-            title: "Referral Balance: ",
-            balance: '$balance USD',
-          ),
-          SizedBox(height: 0.5.h),
-          _BalanceWidget(
-            title: "Referral Balance: ",
-            balance: '$jmdBalance JMD',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BalanceWidget extends StatelessWidget {
-  const _BalanceWidget({required this.balance, required this.title});
-  final String balance;
-  final String title;
+class _DashboardTopBar extends StatelessWidget {
+  const _DashboardTopBar();
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.menu_rounded, color: Color(0xFF07132D)),
+          iconSize: 31,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+        ),
+        const Spacer(),
+        SvgPicture.asset(
+          'assets/svgs/app_logo_sendx.svg',
+          width: 29.w,
+          fit: BoxFit.contain,
+        ),
+        const Spacer(),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            IconButton(
+              onPressed: () => _goToNested(AppPages.newsScreen),
+              icon: const Icon(
+                Icons.notifications_none_rounded,
+                color: Color(0xFF07132D),
+              ),
+              iconSize: 31,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+            ),
+            Positioned(
+              right: -1,
+              top: -2,
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                decoration: const BoxDecoration(
+                  color: AppColors.coral,
+                  shape: BoxShape.circle,
+                ),
+                child: const Text(
+                  '3',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _HeroAccountCard extends GetView<DashboardController> {
+  const _HeroAccountCard({required this.data});
+
+  final DashboardData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final user = find<LocalRepository>().getInstantUser();
+    final name = user.firstName.trim().isNotEmpty ? user.firstName.trim() : 'User';
+    final initials = _initials(user.firstName, user.lastName);
+    final accountId = user.mailbox.isNotEmpty ? 'SX-${user.mailbox}' : data.referralCode;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(5.2.w, 3.h, 4.2.w, 2.8.h),
+      decoration: BoxDecoration(
+        gradient: AppColors.brandGradient,
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.cyan.withOpacity(0.18),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withOpacity(0.35), width: 2),
+                ),
+                child: Text(
+                  initials,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              SizedBox(width: 4.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hello, $name',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        height: 1.05,
+                      ),
+                    ),
+                    SizedBox(height: .8.h),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'Account ID: $accountId',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.86),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 1.5.w),
+                        InkWell(
+                          onTap: () async {
+                            await Clipboard.setData(ClipboardData(text: accountId));
+                            FlushSnackbar.showSnackBar('Account ID copied');
+                          },
+                          child: Icon(
+                            Icons.copy_rounded,
+                            color: Colors.white.withOpacity(0.85),
+                            size: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.more_vert_rounded,
+                color: Colors.white.withOpacity(0.9),
+                size: 29,
+              ),
+            ],
+          ),
+          SizedBox(height: 2.3.h),
+          Divider(color: Colors.white.withOpacity(0.14), height: 1),
+          SizedBox(height: 2.3.h),
+          Row(
+            children: [
+              Expanded(
+                child: _HeroMetric(
+                  label: 'Outstanding Balance',
+                  value: _balanceOnly(data.outstandingBalance),
+                  suffix: 'JMD',
+                  icon: Icons.visibility_outlined,
+                  buttonLabel: 'View Invoices',
+                  buttonIcon: Icons.description_outlined,
+                  onTap: () => _goToNested(AppPages.unpaidInvoicesScreen),
+                ),
+              ),
+              Container(
+                width: 1,
+                height: 9.8.h,
+                margin: EdgeInsets.symmetric(horizontal: 4.w),
+                color: Colors.white.withOpacity(0.22),
+              ),
+              Expanded(
+                child: _HeroMetric(
+                  label: 'Packages Ready',
+                  value: data.outstandingPackage.toString(),
+                  suffix: 'For Pickup',
+                  icon: Icons.inventory_2_outlined,
+                  buttonLabel: 'View Packages',
+                  buttonIcon: Icons.chevron_right_rounded,
+                  onTap: () => _goToNested(AppPages.trackPackages),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroMetric extends StatelessWidget {
+  const _HeroMetric({
+    required this.label,
+    required this.value,
+    required this.suffix,
+    required this.icon,
+    required this.buttonLabel,
+    required this.buttonIcon,
+    required this.onTap,
+  });
+
+  final String label;
+  final String value;
+  final String suffix;
+  final IconData icon;
+  final String buttonLabel;
+  final IconData buttonIcon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.85),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            SizedBox(width: 1.w),
+            Icon(icon, color: Colors.white.withOpacity(0.75), size: 17),
+          ],
+        ),
+        SizedBox(height: .8.h),
+        RichText(
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              TextSpan(
+                text: ' $suffix',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 1.8.h),
+        InkWell(
+          borderRadius: BorderRadius.circular(9),
+          onTap: onTap,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.2.h),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(buttonIcon, color: Colors.white, size: 20),
+                SizedBox(width: 1.6.w),
+                Flexible(
+                  child: Text(
+                    buttonLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class _StatsStrip extends StatelessWidget {
+  const _StatsStrip({required this.data});
+
+  final DashboardData data;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SoftCard(
+      padding: EdgeInsets.symmetric(vertical: 2.2.h, horizontal: 2.5.w),
+      child: Row(
+        children: [
+          _StatItem(
+            icon: Icons.warehouse_outlined,
+            iconColor: const Color(0xFF157BE7),
+            iconBg: const Color(0xFFEAF3FF),
+            value: data.wherehouse.toString(),
+            label: 'Miami Warehouse',
+          ),
+          _ThinDivider(),
+          _StatItem(
+            icon: Icons.local_shipping_rounded,
+            iconColor: const Color(0xFF8D37DE),
+            iconBg: const Color(0xFFF3E9FF),
+            value: data.inTransit.toString(),
+            label: 'In Transit',
+          ),
+          _ThinDivider(),
+          _StatItem(
+            icon: Icons.check_circle,
+            iconColor: const Color(0xFF09B83E),
+            iconBg: const Color(0xFFEAFCEB),
+            value: data.outstandingPackage.toString(),
+            label: 'Ready for Pickup',
+          ),
+          _ThinDivider(),
+          _StatItem(
+            icon: Icons.account_balance_wallet_rounded,
+            iconColor: const Color(0xFFFF8A00),
+            iconBg: const Color(0xFFFFF3E5),
+            value: _balanceOnly(data.outstandingBalance),
+            label: 'Outstanding Balance',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatItem extends StatelessWidget {
+  const _StatItem({
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.value,
+    required this.label,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Icon(icon, color: iconColor, size: 31),
+          ),
+          SizedBox(height: 1.2.h),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Color(0xFF07132D),
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          SizedBox(height: .4.h),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Color(0xFF222538),
+              fontSize: 10.5,
+              fontWeight: FontWeight.w500,
+              height: 1.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RewardsWalletCard extends StatelessWidget {
+  const _RewardsWalletCard({required this.data});
+
+  final DashboardData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final rate = num.tryParse(data.setting.usRate) ?? 0;
+    final rewardJmd = data.memberPoints * rate;
+    final targetPackages = int.tryParse(data.setting.rewardPackages) ?? 0;
+    final progress = targetPackages == 0
+        ? 0.0
+        : (data.packageCount / targetPackages).clamp(0.0, 1.0).toDouble();
+    final percent = (progress * 100).round();
+    final remainingPackages =
+        (targetPackages - data.packageCount).clamp(0, targetPackages).toInt();
+
+    return _SoftCard(
+      padding: EdgeInsets.all(3.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionTitle(
+            icon: Icons.card_giftcard_rounded,
+            title: 'Rewards Wallet',
+            color: const Color(0xFF078A39),
+          ),
+          SizedBox(height: 2.4.h),
+          _AmountLine(amount: '${data.memberPoints.toStringAsFixed(2)} USD', label: 'Rewards Balance'),
+          SizedBox(height: 1.4.h),
+          _AmountLine(amount: '${rewardJmd.toStringAsFixed(2)} JMD', label: 'Rewards Balance'),
+          SizedBox(height: 2.h),
+          Divider(color: AppColors.border.withOpacity(.8)),
+          SizedBox(height: 1.2.h),
+          Row(
+            children: [
+              Text(
+                '${data.packageCount} / $targetPackages packages',
+                style: const TextStyle(
+                  color: Color(0xFF222538),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '$percent%',
+                style: const TextStyle(
+                  color: Color(0xFF222538),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: .9.h),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: LinearProgressIndicator(
+              minHeight: 9,
+              value: progress,
+              color: const Color(0xFF139EF2),
+              backgroundColor: const Color(0xFFE6E8EC),
+            ),
+          ),
+          SizedBox(height: 1.2.h),
+          Text(
+            'Ship $remainingPackages more packages to earn ${data.setting.rewardAmount} USD',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Color(0xFF555967),
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              height: 1.25,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReferEarnCard extends StatelessWidget {
+  const _ReferEarnCard({required this.data});
+
+  final DashboardData data;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SoftCard(
+      padding: EdgeInsets.all(3.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionTitle(
+            icon: Icons.group_rounded,
+            title: 'Refer & Earn',
+            color: const Color(0xFF4E1499),
+          ),
+          SizedBox(height: 2.7.h),
+          Text(
+            'Earn ${data.setting.referralAmount.toStringAsFixed(2)} USD on ${data.setting.reffralPackages} packages shipped or reach ${data.setting.reffralWeight}lb weight.',
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Color(0xFF222538),
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              height: 1.25,
+            ),
+          ),
+          SizedBox(height: 2.4.h),
+          Row(
+            children: [
+              Expanded(
+                child: _MiniActionButton(
+                  icon: Icons.link_rounded,
+                  label: 'Share Link',
+                  color: const Color(0xFF137EEA),
+                  onTap: () async {
+                    await Clipboard.setData(ClipboardData(text: data.referralCode));
+                    FlushSnackbar.showSnackBar('Referral link copied');
+                  },
+                ),
+              ),
+              SizedBox(width: 2.w),
+              Expanded(
+                child: _MiniActionButton(
+                  icon: Icons.qr_code_2_rounded,
+                  label: 'Show QR Code',
+                  color: const Color(0xFF8D37DE),
+                  onTap: () => _showQrDialog(data.referralCode),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecentPackagesCard extends StatelessWidget {
+  const _RecentPackagesCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final packagesController = Get.find<DashboardPackagesController>();
+    return _SoftCard(
+      padding: EdgeInsets.fromLTRB(4.w, 2.h, 4.w, 1.2.h),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.inventory_2_outlined, color: Color(0xFF07132D), size: 28),
+              SizedBox(width: 2.5.w),
+              const Text(
+                'Recent Packages',
+                style: TextStyle(
+                  color: Color(0xFF07132D),
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: () => _goToNested(AppPages.trackPackages),
+                child: const Text(
+                  'View All',
+                  style: TextStyle(
+                    color: Color(0xFF146FE3),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded, color: Color(0xFF146FE3)),
+            ],
+          ),
+          FutureBuilder<List<Package>>(
+            future: packagesController.listener(0),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 1.5.h),
+                  child: const ShimmerWidget(
+                    child: SizedBox(height: 95, width: double.infinity),
+                  ),
+                );
+              }
+
+              final packages = (snapshot.data ?? []).take(2).toList();
+              if (packages.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 18),
+                  child: Text(
+                    'No recent packages found',
+                    style: TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              }
+
+              return Column(
+                children: [
+                  for (int i = 0; i < packages.length; i++) ...[
+                    if (i > 0) Divider(color: AppColors.border.withOpacity(.9)),
+                    _RecentPackageRow(package: packages[i], tintIndex: i),
+                  ],
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecentPackageRow extends StatelessWidget {
+  const _RecentPackageRow({required this.package, required this.tintIndex});
+
+  final Package package;
+  final int tintIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final ready = package.statusName.toLowerCase().contains('ready');
+    final color = ready ? const Color(0xFF0FBF43) : const Color(0xFF7B2DE2);
+    final bg = ready ? const Color(0xFFE9FBEF) : const Color(0xFFF4E9FF);
+
+    return InkWell(
+      onTap: package.isInvoice == 1
+          ? () => _goToNested(AppPages.invoiceDetails, arguments: package.invoiceNo.toString())
+          : null,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 1.1.h),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: bg,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Icon(Icons.inventory_2_outlined, color: color, size: 30),
+            ),
+            SizedBox(width: 3.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'HAWB: ${package.supplierTrackingNo.isNotEmpty ? package.supplierTrackingNo : package.trackingNo}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Color(0xFF07132D),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  SizedBox(height: .4.h),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          package.courier.isNotEmpty ? package.courier : package.merchant,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Color(0xFF666A76),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 2.5.w),
+                      const Icon(Icons.calendar_today_outlined, size: 13, color: Color(0xFF666A76)),
+                      SizedBox(width: 1.w),
+                      Text(
+                        package.createdAt.toDDMMYYYY,
+                        style: const TextStyle(
+                          color: Color(0xFF666A76),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 2.5.w, vertical: .9.h),
+              decoration: BoxDecoration(
+                color: ready ? const Color(0xFFE9FBEF) : const Color(0xFFEFF4FF),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                package.statusName.isNotEmpty ? package.statusName : 'In Transit',
+                style: TextStyle(
+                  color: ready ? const Color(0xFF0DAA3B) : const Color(0xFF146FE3),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: Color(0xFF07132D)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickActionsCard extends StatelessWidget {
+  const _QuickActionsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final actions = [
+      _QuickAction('Add Package', Icons.add_a_photo_outlined, const Color(0xFF139EF2), AppPages.addPreAlertScreen),
+      _QuickAction('My Invoices', Icons.description_rounded, const Color(0xFF8766E8), AppPages.invoices),
+      _QuickAction('Support Ticket', Icons.headset_mic_rounded, const Color(0xFFFF8A00), AppPages.supportTickets),
+      _QuickAction('Track Shipment', Icons.location_on_rounded, const Color(0xFF20A85B), AppPages.trackPackages),
+      _QuickAction('Rate Calculator', Icons.calculate_rounded, AppColors.coral, AppPages.purchase),
+    ];
+
+    return _SoftCard(
+      padding: EdgeInsets.fromLTRB(3.w, 2.h, 3.w, 1.3.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 4),
+            child: Text(
+              'Quick Actions',
+              style: TextStyle(
+                color: Color(0xFF07132D),
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          SizedBox(height: 1.4.h),
+          Row(
+            children: [
+              for (int i = 0; i < actions.length; i++) ...[
+                Expanded(child: _QuickActionTile(action: actions[i])),
+                if (i != actions.length - 1) SizedBox(width: 2.w),
+              ],
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickAction {
+  const _QuickAction(this.label, this.icon, this.color, this.route);
+
+  final String label;
+  final IconData icon;
+  final Color color;
+  final String route;
+}
+
+class _QuickActionTile extends StatelessWidget {
+  const _QuickActionTile({required this.action});
+
+  final _QuickAction action;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(13),
+      onTap: () => _goToNested(action.route),
+      child: Container(
+        height: 11.8.h,
+        padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.3.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(13),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(action.icon, color: action.color, size: 28),
+            SizedBox(height: 1.h),
+            Text(
+              action.label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xFF07132D),
+                fontSize: 10.5,
+                fontWeight: FontWeight.w600,
+                height: 1.1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ManagerCard extends StatelessWidget {
+  const _ManagerCard({required this.manager, required this.managerPhone});
+
+  final String manager;
+  final String managerPhone;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SoftCard(
+      padding: EdgeInsets.all(4.w),
+      child: Row(
+        children: [
+          const Icon(Icons.support_agent_rounded, color: AppColors.cyan),
+          SizedBox(width: 3.w),
+          Expanded(
+            child: Text(
+              managerPhone.isEmpty
+                  ? 'Your Manager: $manager'
+                  : 'Your Manager: $manager - $managerPhone',
+              style: const TextStyle(
+                color: Color(0xFF07132D),
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SoftCard extends StatelessWidget {
+  const _SoftCard({required this.child, required this.padding});
+
+  final Widget child;
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: padding,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.border.withOpacity(.85)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB7DDF5).withOpacity(.18),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+class _ThinDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 11.h,
+      color: AppColors.border,
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({
+    required this.icon,
+    required this.title,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String title;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: color, size: 24),
+        SizedBox(width: 2.w),
+        Expanded(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: color,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AmountLine extends StatelessWidget {
+  const _AmountLine({required this.amount, required this.label});
+
+  final String amount;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
-          title,
-          style: TextStyle(
-            color: AppColors.muted,
-            fontSize: 10.sp,
-            fontWeight: FontWeight.w400,
+          amount,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Color(0xFF07132D),
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
           ),
         ),
         Text(
-          balance,
-          style: TextStyle(
-            color: AppColors.ink,
-            fontSize: 10.sp,
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Color(0xFF666A76),
+            fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -263,120 +1044,44 @@ class _BalanceWidget extends StatelessWidget {
   }
 }
 
-class _DashboardCard extends StatelessWidget {
-  const _DashboardCard({required this.title, required this.subTitle});
-  final String title;
-  final String subTitle;
+class _MiniActionButton extends StatelessWidget {
+  const _MiniActionButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: context.width,
-      height: 13.5.h,
-      margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.cyan.withOpacity(0.10),
-            blurRadius: 22,
-            offset: const Offset(0, 10),
-          )
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(2.h),
-        child: Row(
-          children: [
-            Container(
-              width: 1.1.w,
-              height: double.infinity,
-              decoration: BoxDecoration(
-                gradient: AppColors.brandGradient,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            SizedBox(width: 3.w),
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                        color: AppColors.ink,
-                        fontSize: 22.sp,
-                        fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  SizedBox(height: 0.4.h),
-                  Text(
-                    subTitle,
-                    style: TextStyle(
-                        color: AppColors.muted,
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  )
-                ],
-              ),
-            ),
-          ],
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: onTap,
+      child: Container(
+        height: 8.5.h,
+        decoration: BoxDecoration(
+          color: color.withOpacity(.10),
+          borderRadius: BorderRadius.circular(10),
         ),
-      ),
-    );
-  }
-}
-
-class _DashboardShimmerCard extends StatelessWidget {
-  const _DashboardShimmerCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: context.width,
-      height: 14.h,
-      margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.cyan.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(2.h),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ShimmerWidget(
-              radius: BorderRadius.circular(4),
-              width: 15.w,
-              child: SizedBox(
-                width: context.width,
-                height: 3.h,
-              ),
-            ),
-            SizedBox(height: 1.h),
-            ShimmerWidget(
-              height: 3.h,
-              width: context.width,
-              radius: BorderRadius.circular(4),
-              child: SizedBox(
-                width: context.width,
-                height: 2.6.h,
+            Icon(icon, color: color, size: 25),
+            SizedBox(height: .8.h),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: color,
+                fontSize: 10.5,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
@@ -386,282 +1091,99 @@ class _DashboardShimmerCard extends StatelessWidget {
   }
 }
 
-class _InfoBuilderWidget extends StatelessWidget {
-  const _InfoBuilderWidget({required this.data});
-  final DashboardData data;
+class _DashboardLoading extends StatelessWidget {
+  const _DashboardLoading();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: context.width,
-      padding: EdgeInsets.all(2.h),
-      margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x19000000),
-            blurRadius: 4,
-            offset: Offset(0, 3),
-            spreadRadius: 1.8,
-          )
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(3.8.w, 2.h, 3.8.w, 2.h),
+      child: Column(
+        children: [
+          for (final height in [38.h, 16.h, 20.h, 18.h, 15.h])
+            Padding(
+              padding: EdgeInsets.only(bottom: 1.6.h),
+              child: ShimmerWidget(
+                radius: BorderRadius.circular(22),
+                child: SizedBox(width: double.infinity, height: height),
+              ),
+            ),
         ],
       ),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: "You can earn ",
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            TextSpan(
-              text: "${data.setting.rewardAmount}USD",
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            TextSpan(
-              text: " on ",
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            TextSpan(
-              text: data.setting.rewardPackages,
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            TextSpan(
-              text: " packages shipped or reach ",
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            TextSpan(
-              text: "${data.setting.rewardWeight}lb",
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            TextSpan(
-              text: " weight for shipped packages, currently you shipped ",
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            TextSpan(
-              text: "${data.packageCount}",
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            TextSpan(
-              text: " packages weight ",
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            TextSpan(
-              text: "${data.packageWeight}lbs",
-              style: TextStyle(
-                color: const Color(0xFF181725),
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
 
-class _QRWidget extends StatelessWidget {
-  const _QRWidget(this.dataKey);
-  final String dataKey;
+class _DashboardEmpty extends StatelessWidget {
+  const _DashboardEmpty({this.message = 'No data found'});
+
+  final String message;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
       children: [
-        _RefferalLink(dataKey),
-        Container(
-          alignment: Alignment.center,
-          width: context.width,
-          padding: EdgeInsets.all(2.h),
-          margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x19000000),
-                blurRadius: 4,
-                offset: Offset(0, 3),
-                spreadRadius: 1.8,
-              )
-            ],
+        SizedBox(height: 34.h),
+        Center(
+          child: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Color(0xFF07132D),
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          child: QrImageView(
-            data: dataKey,
-            version: QrVersions.auto,
-            size: 25.h,
-          ),
-        ),
+        )
       ],
     );
   }
 }
 
-class _RefferalLink extends StatelessWidget {
-  const _RefferalLink(this.link);
-  final String link;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: context.width,
-      margin: EdgeInsets.only(left: 3.2.w, right: 3.2.w, bottom: 1.h),
-      padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x19000000),
-            blurRadius: 4,
-            offset: Offset(0, 3),
-            spreadRadius: 1.8,
-          )
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Refferal Link',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 15.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Container(
-            width: context.width,
-            margin: EdgeInsets.only(top: 1.h),
-            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: Colors.grey.withOpacity(0.15),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    link,
-                    style: TextStyle(color: Colors.black, fontSize: 11.sp),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.copy),
-                  onPressed: () async {
-                    await Clipboard.setData(ClipboardData(text: link)).then(
-                      (e) {
-                        FlushSnackbar.showSnackBar(
-                            'Link Has been copied to clipboard');
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+String _initials(String firstName, String lastName) {
+  final first = firstName.trim().isNotEmpty ? firstName.trim()[0] : '';
+  final last = lastName.trim().isNotEmpty ? lastName.trim()[0] : '';
+  final value = '$first$last'.toUpperCase();
+  return value.isEmpty ? 'SX' : value;
 }
 
-class ManagerWidget extends StatelessWidget {
-  const ManagerWidget({
-    super.key,
-    required this.manager,
-    required this.managerPhone,
-  });
-  final String manager;
-  final String managerPhone;
+String _balanceOnly(String balance) {
+  return balance.replaceAll('JMD', '').trim();
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Visibility(
-      visible: manager.isNotEmpty,
-      child: Container(
-        width: context.width,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x19000000),
-              blurRadius: 4,
-              offset: Offset(0, 3),
-              spreadRadius: 1.8,
-            )
-          ],
-        ),
-        padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
-        margin: EdgeInsets.symmetric(
-          vertical: 2.h,
-          horizontal: 3.w,
-        ),
+void _goToNested(String route, {dynamic arguments}) {
+  final bottomNavNestedID = find<BottomNavController>().bottomNavNestedID;
+  Get.toNamed(route, id: bottomNavNestedID, arguments: arguments);
+}
+
+void _showQrDialog(String code) {
+  Get.dialog(
+    Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+      child: Padding(
+        padding: const EdgeInsets.all(22),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Your Manager:',
-              textAlign: TextAlign.left,
+            const Text(
+              'Referral QR Code',
               style: TextStyle(
-                color: Colors.black,
-                fontSize: 15.sp,
-                fontWeight: FontWeight.bold,
+                color: Color(0xFF07132D),
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
               ),
             ),
-            Text(manager),
-            SizedBox(height: 1.h),
-            Text(
-              'Manager Phone:',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 15.sp,
-                fontWeight: FontWeight.bold,
-              ),
+            const SizedBox(height: 18),
+            QrImageView(
+              data: code,
+              version: QrVersions.auto,
+              size: 220,
             ),
-            Text(managerPhone),
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }

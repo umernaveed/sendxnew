@@ -90,56 +90,57 @@ class BottomNavScreen extends GetView<BottomNavController> {
                 BottomNavigationBarItem(
                   activeIcon: Padding(
                     padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_person.svg',
-                      color: AppColors.cyan,
-                      height: 2.h,
-                    ),
-                  ),
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_person.svg',
-                      height: 2.h,
-                    ),
-                  ),
-                  label: 'Authorize User',
-                ),
-                BottomNavigationBarItem(
-                  activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_delivery.svg',
-                      color: AppColors.cyan,
-                      height: 2.h,
-                    ),
-                  ),
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
-                    child: SvgPicture.asset(
-                      'assets/svgs/ic_delivery.svg',
-                      height: 2.h,
-                    ),
-                  ),
-                  label: 'Delivery',
-                ),
-                BottomNavigationBarItem(
-                  activeIcon: Padding(
-                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
                     child: Icon(
-                      Icons.newspaper,
+                      Icons.inventory_2_outlined,
                       color: AppColors.cyan,
-                      size: 2.3.h,
+                      size: 2.4.h,
                     ),
                   ),
                   icon: Padding(
                     padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
                     child: Icon(
-                      Icons.newspaper,
-                      size: 2.3.h,
+                      Icons.inventory_2_outlined,
+                      size: 2.4.h,
                     ),
                   ),
-                  label: 'News',
+                  label: 'Packages',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: Padding(
+                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    child: Icon(
+                      Icons.add_circle,
+                      color: AppColors.cyan,
+                      size: 3.8.h,
+                    ),
+                  ),
+                  icon: Padding(
+                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    child: Icon(
+                      Icons.add_circle,
+                      color: AppColors.cyan,
+                      size: 3.8.h,
+                    ),
+                  ),
+                  label: 'New Package',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: Padding(
+                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    child: Icon(
+                      Icons.notifications_none_rounded,
+                      color: AppColors.cyan,
+                      size: 2.6.h,
+                    ),
+                  ),
+                  icon: Padding(
+                    padding: EdgeInsets.only(bottom: 0.4.h, top: 0.8.h),
+                    child: Icon(
+                      Icons.notifications_none_rounded,
+                      size: 2.6.h,
+                    ),
+                  ),
+                  label: 'Notifications',
                 ),
                 BottomNavigationBarItem(
                   activeIcon: Padding(
