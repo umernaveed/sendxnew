@@ -62,30 +62,35 @@ class _SupportHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 7.8.h,
-      child: Stack(
-        alignment: Alignment.center,
+      height: 8.2.h,
+      child: Row(
         children: [
-          Positioned(
-            left: -1.w,
+          SizedBox(
+            width: 12.w,
             child: IconButton(
-              onPressed: () {
-                final bottomNavNestedID =
-                    find<BottomNavController>().bottomNavNestedID;
-                Get.back(id: bottomNavNestedID);
-              },
+              onPressed: _goBackFromSupport,
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(
+                minWidth: 10.w,
+                minHeight: 5.h,
+              ),
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: const Color(0xFF07132D),
-                size: 3.h,
+                size: 2.5.h,
               ),
             ),
           ),
-          SvgPicture.asset(
-            'assets/svgs/app_logo_sendx.svg',
-            width: 22.w,
-            fit: BoxFit.contain,
+          Expanded(
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/svgs/app_logo_sendx.svg',
+                width: 20.5.w,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
+          SizedBox(width: 12.w),
         ],
       ),
     );
@@ -1152,4 +1157,21 @@ class _IssueOption {
     return (label: 'Customer Replied', color: const Color(0xFFE0A10B), bg: const Color(0xFFFFF7E4));
   }
   return (label: 'Waiting for Agent', color: const Color(0xFF176DF2), bg: const Color(0xFFEAF4FF));
+}
+
+void _goBackFromSupport() {
+  final bottomNav = find<BottomNavController>();
+  final nestedNavigator = Get.nestedKey(bottomNav.bottomNavNestedID)?.currentState;
+  if (nestedNavigator?.canPop() ?? false) {
+    nestedNavigator!.pop();
+    return;
+  }
+
+  final rootNavigator = Get.key.currentState;
+  if (rootNavigator?.canPop() ?? false) {
+    Get.back();
+    return;
+  }
+
+  bottomNav.onTabChange(0);
 }

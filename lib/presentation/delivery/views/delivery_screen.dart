@@ -116,16 +116,19 @@ class _DeliveryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomNavNestedID = find<BottomNavController>().bottomNavNestedID;
     return SizedBox(
-      height: 10.2.h,
-      child: Stack(
-        alignment: Alignment.center,
+      height: 8.2.h,
+      child: Row(
         children: [
-          Positioned(
-            left: 3.2.w,
+          SizedBox(
+            width: 12.w,
             child: IconButton(
-              onPressed: () => Get.back(id: bottomNavNestedID),
+              onPressed: _goBackFromDelivery,
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(
+                minWidth: 10.w,
+                minHeight: 5.h,
+              ),
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: const Color(0xFF07132D),
@@ -133,11 +136,16 @@ class _DeliveryHeader extends StatelessWidget {
               ),
             ),
           ),
-          SvgPicture.asset(
-            'assets/svgs/app_logo_sendx.svg',
-            width: 21.w,
-            fit: BoxFit.contain,
+          Expanded(
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/svgs/app_logo_sendx.svg',
+                width: 20.5.w,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
+          SizedBox(width: 12.w),
         ],
       ),
     );
@@ -750,4 +758,21 @@ String _amountWithCurrency(dynamic amount) {
   if (value.isEmpty) return 'JMD 0.00';
   if (value.toUpperCase().contains('JMD')) return value;
   return 'JMD $value';
+}
+
+void _goBackFromDelivery() {
+  final bottomNav = find<BottomNavController>();
+  final nestedNavigator = Get.nestedKey(bottomNav.bottomNavNestedID)?.currentState;
+  if (nestedNavigator?.canPop() ?? false) {
+    nestedNavigator!.pop();
+    return;
+  }
+
+  final rootNavigator = Get.key.currentState;
+  if (rootNavigator?.canPop() ?? false) {
+    Get.back();
+    return;
+  }
+
+  bottomNav.onTabChange(0);
 }

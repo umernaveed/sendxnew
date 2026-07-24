@@ -103,16 +103,19 @@ class _AddressHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomNavNestedID = find<BottomNavController>().bottomNavNestedID;
     return SizedBox(
       height: 8.5.h,
-      child: Stack(
-        alignment: Alignment.center,
+      child: Row(
         children: [
-          Positioned(
-            left: -1.w,
+          SizedBox(
+            width: 12.w,
             child: IconButton(
-              onPressed: () => Get.back(id: bottomNavNestedID),
+              onPressed: _goBackFromAddress,
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(
+                minWidth: 10.w,
+                minHeight: 5.h,
+              ),
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: const Color(0xFF07132D),
@@ -120,11 +123,16 @@ class _AddressHeader extends StatelessWidget {
               ),
             ),
           ),
-          SvgPicture.asset(
-            'assets/svgs/app_logo_sendx.svg',
-            width: 21.w,
-            fit: BoxFit.contain,
+          Expanded(
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/svgs/app_logo_sendx.svg',
+                width: 20.5.w,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
+          SizedBox(width: 12.w),
         ],
       ),
     );
@@ -571,6 +579,23 @@ class _ShimmerLoading extends StatelessWidget {
       ),
     );
   }
+}
+
+void _goBackFromAddress() {
+  final bottomNav = find<BottomNavController>();
+  final nestedNavigator = Get.nestedKey(bottomNav.bottomNavNestedID)?.currentState;
+  if (nestedNavigator?.canPop() ?? false) {
+    nestedNavigator!.pop();
+    return;
+  }
+
+  final rootNavigator = Get.key.currentState;
+  if (rootNavigator?.canPop() ?? false) {
+    Get.back();
+    return;
+  }
+
+  bottomNav.onTabChange(0);
 }
 
 class ShimmerAddressItemWidget extends StatelessWidget {

@@ -85,30 +85,35 @@ class _InvoiceHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 7.8.h,
-      child: Stack(
-        alignment: Alignment.center,
+      height: 8.2.h,
+      child: Row(
         children: [
-          Positioned(
-            left: -1.w,
+          SizedBox(
+            width: 12.w,
             child: IconButton(
-              onPressed: () {
-                final bottomNavNestedID =
-                    find<BottomNavController>().bottomNavNestedID;
-                Get.back(id: bottomNavNestedID);
-              },
+              onPressed: _goBackFromInvoice,
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(
+                minWidth: 10.w,
+                minHeight: 5.h,
+              ),
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: const Color(0xFF07132D),
-                size: 3.h,
+                size: 2.5.h,
               ),
             ),
           ),
-          SvgPicture.asset(
-            'assets/svgs/app_logo_sendx.svg',
-            width: 22.w,
-            fit: BoxFit.contain,
+          Expanded(
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/svgs/app_logo_sendx.svg',
+                width: 20.5.w,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
+          SizedBox(width: 12.w),
         ],
       ),
     );
@@ -159,7 +164,7 @@ class _InvoiceHero extends StatelessWidget {
                       'Invoice Details',
                       style: TextStyle(
                         color: Colors.white.withOpacity(.9),
-                        fontSize: 11.sp,
+                        fontSize: 9.6.sp,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -172,7 +177,7 @@ class _InvoiceHero extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20.sp,
+                    fontSize: 13.8.sp,
                     fontWeight: FontWeight.w900,
                     height: 1,
                   ),
@@ -190,7 +195,7 @@ class _InvoiceHero extends StatelessWidget {
                       data.datePaid.toDDMMYYYY,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 10.5.sp,
+                        fontSize: 9.3.sp,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -203,7 +208,7 @@ class _InvoiceHero extends StatelessWidget {
                   'Total Amount',
                   style: TextStyle(
                     color: Colors.white.withOpacity(.9),
-                    fontSize: 12.sp,
+                    fontSize: 10.2.sp,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -214,7 +219,7 @@ class _InvoiceHero extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 21.sp,
+                    fontSize: 14.2.sp,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -253,7 +258,7 @@ class _HeroStatusChip extends StatelessWidget {
         unpaid ? 'UNPAID' : 'PAID',
         style: TextStyle(
           color: unpaid ? const Color(0xFF151515) : Colors.white,
-          fontSize: 9.5.sp,
+          fontSize: 8.4.sp,
           fontWeight: FontWeight.w900,
         ),
       ),
@@ -290,7 +295,7 @@ class _BillToCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: const Color(0xFF111D35),
-                    fontSize: 13.6.sp,
+                    fontSize: 11.4.sp,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -353,7 +358,7 @@ class _CompanyCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: const Color(0xFF0B63BF),
-              fontSize: 12.sp,
+              fontSize: 10.2.sp,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -466,7 +471,7 @@ class _ChargesBreakdownCard extends StatelessWidget {
                     'Total Amount',
                     style: TextStyle(
                       color: const Color(0xFF0B63BF),
-                      fontSize: 12.2.sp,
+                      fontSize: 10.5.sp,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -475,7 +480,7 @@ class _ChargesBreakdownCard extends StatelessWidget {
                   _amountWithCurrency(data.grandTotal),
                   style: TextStyle(
                     color: const Color(0xFF0B63BF),
-                    fontSize: 14.sp,
+                    fontSize: 11.8.sp,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -537,7 +542,7 @@ class _StorageFeeNotice extends StatelessWidget {
                   '$title: ${_amountWithCurrency(amount)}',
                   style: TextStyle(
                     color: due ? const Color(0xFF8C6000) : const Color(0xFF0A7C4D),
-                    fontSize: 11.5.sp,
+                    fontSize: 9.8.sp,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -547,7 +552,7 @@ class _StorageFeeNotice extends StatelessWidget {
                     message,
                     style: TextStyle(
                       color: const Color(0xFF586274),
-                      fontSize: 10.sp,
+                      fontSize: 8.8.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -606,7 +611,7 @@ class _PaymentCard extends GetView<InvoiceDetailController> {
             unpaid ? 'Amount Due' : 'Amount Paid',
             style: TextStyle(
               color: const Color(0xFF0A9E69),
-              fontSize: 11.sp,
+              fontSize: 9.5.sp,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -618,7 +623,7 @@ class _PaymentCard extends GetView<InvoiceDetailController> {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: const Color(0xFF111D35),
-              fontSize: 16.sp,
+              fontSize: 12.8.sp,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -644,7 +649,7 @@ class _PaymentCard extends GetView<InvoiceDetailController> {
                     unpaid ? 'Pay Now' : 'Paid',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 13.sp,
+                      fontSize: 10.8.sp,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -771,7 +776,7 @@ class _CardTitle extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: const Color(0xFF111D35),
-              fontSize: 11.sp,
+              fontSize: 9.6.sp,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -792,7 +797,7 @@ class _SmallLabel extends StatelessWidget {
       label,
       style: TextStyle(
         color: const Color(0xFF111D35),
-        fontSize: 10.8.sp,
+        fontSize: 9.5.sp,
         fontWeight: FontWeight.w700,
       ),
     );
@@ -818,7 +823,7 @@ class _KeyValueLine extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: const Color(0xFF151A27),
-                fontSize: 9.5.sp,
+                fontSize: 8.5.sp,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -832,7 +837,7 @@ class _KeyValueLine extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: const Color(0xFF151A27),
-                fontSize: 9.5.sp,
+                fontSize: 8.5.sp,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -868,7 +873,7 @@ class _ChargeRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: const Color(0xFF151A27),
-                fontSize: 10.sp,
+                fontSize: 8.8.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -878,7 +883,7 @@ class _ChargeRow extends StatelessWidget {
             text,
             style: TextStyle(
               color: const Color(0xFF151A27),
-              fontSize: 10.sp,
+              fontSize: 8.8.sp,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -930,7 +935,7 @@ class _TimelineStep extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: const Color(0xFF111D35),
-                    fontSize: 9.7.sp,
+                    fontSize: 8.6.sp,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -940,7 +945,7 @@ class _TimelineStep extends StatelessWidget {
                     subtitle!,
                     style: TextStyle(
                       color: const Color(0xFF586274),
-                      fontSize: 8.8.sp,
+                      fontSize: 8.sp,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -990,7 +995,7 @@ class _BottomAction extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: const Color(0xFF111D35),
-                fontSize: 8.8.sp,
+                fontSize: 8.sp,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -1032,12 +1037,12 @@ class _InvoiceError extends StatelessWidget {
     return Center(
       child: Padding(
         padding: EdgeInsets.all(8.w),
-        child: const Text(
+        child: Text(
           'Something went wrong try again later',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Color(0xFF181725),
-            fontSize: 16,
+            color: const Color(0xFF181725),
+            fontSize: 10.sp,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -1049,7 +1054,7 @@ class _InvoiceError extends StatelessWidget {
 TextStyle _mutedStyle(BuildContext context) {
   return TextStyle(
     color: const Color(0xFF586274),
-    fontSize: 10.5.sp,
+    fontSize: 9.1.sp,
     fontWeight: FontWeight.w500,
     height: 1.25,
   );
@@ -1088,4 +1093,21 @@ String _freightLabel(String freightType) {
 String _weightText(int weight) {
   if (weight <= 0) return '-';
   return '$weight lbs';
+}
+
+void _goBackFromInvoice() {
+  final bottomNav = find<BottomNavController>();
+  final nestedNavigator = Get.nestedKey(bottomNav.bottomNavNestedID)?.currentState;
+  if (nestedNavigator?.canPop() ?? false) {
+    nestedNavigator!.pop();
+    return;
+  }
+
+  final rootNavigator = Get.key.currentState;
+  if (rootNavigator?.canPop() ?? false) {
+    Get.back();
+    return;
+  }
+
+  bottomNav.onTabChange(0);
 }

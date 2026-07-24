@@ -90,55 +90,51 @@ class _UnpaidHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 10.2.h,
+      height: 8.8.h,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Positioned(
-            left: 3.2.w,
-            top: 1.3.h,
-            child: Container(
-              width: 8.7.h,
-              height: 8.7.h,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x10092341),
-                    blurRadius: 18,
-                    offset: Offset(0, 8),
+          Row(
+            children: [
+              SizedBox(
+                width: 12.w,
+                child: IconButton(
+                  onPressed: _goBackFromUnpaidInvoices,
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(
+                    minWidth: 10.w,
+                    minHeight: 5.h,
                   ),
-                ],
-              ),
-              child: IconButton(
-                onPressed: () {
-                  final bottomNavNestedID =
-                      find<BottomNavController>().bottomNavNestedID;
-                  Get.back(id: bottomNavNestedID);
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: const Color(0xFF07132D),
-                  size: 3.h,
+                  icon: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: const Color(0xFF07132D),
+                    size: 2.5.h,
+                  ),
                 ),
               ),
-            ),
-          ),
-          SvgPicture.asset(
-            'assets/svgs/app_logo_sendx.svg',
-            width: 24.w,
-            fit: BoxFit.contain,
+              Expanded(
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/svgs/app_logo_sendx.svg',
+                    width: 20.5.w,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.w),
+            ],
           ),
           Positioned(
             right: 5.w,
             bottom: 0.4.h,
-            child: Opacity(
-              opacity: .08,
-              child: Icon(
-                Icons.receipt_long_outlined,
-                color: const Color(0xFF176DF2),
-                size: 9.5.h,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: .08,
+                child: Icon(
+                  Icons.receipt_long_outlined,
+                  color: const Color(0xFF176DF2),
+                  size: 8.5.h,
+                ),
               ),
             ),
           ),
@@ -767,4 +763,21 @@ String _amountWithCurrency(dynamic amount) {
   if (value.isEmpty) return '0.00 JMD';
   if (value.toUpperCase().contains('JMD')) return value;
   return '$value JMD';
+}
+
+void _goBackFromUnpaidInvoices() {
+  final bottomNav = find<BottomNavController>();
+  final nestedNavigator = Get.nestedKey(bottomNav.bottomNavNestedID)?.currentState;
+  if (nestedNavigator?.canPop() ?? false) {
+    nestedNavigator!.pop();
+    return;
+  }
+
+  final rootNavigator = Get.key.currentState;
+  if (rootNavigator?.canPop() ?? false) {
+    Get.back();
+    return;
+  }
+
+  bottomNav.onTabChange(0);
 }

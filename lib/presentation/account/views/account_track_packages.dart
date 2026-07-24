@@ -76,55 +76,51 @@ class _PackagesHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 11.h,
+      height: 8.8.h,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Positioned(
-            left: 3.8.w,
-            top: 1.5.h,
-            child: Container(
-              width: 8.7.h,
-              height: 8.7.h,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x10092341),
-                    blurRadius: 18,
-                    offset: Offset(0, 8),
+          Row(
+            children: [
+              SizedBox(
+                width: 12.w,
+                child: IconButton(
+                  onPressed: _goBackFromPackages,
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(
+                    minWidth: 10.w,
+                    minHeight: 5.h,
                   ),
-                ],
-              ),
-              child: IconButton(
-                onPressed: () {
-                  final bottomNavNestedID =
-                      find<BottomNavController>().bottomNavNestedID;
-                  Get.back(id: bottomNavNestedID);
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: const Color(0xFF07132D),
-                  size: 3.2.h,
+                  icon: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: const Color(0xFF07132D),
+                    size: 2.5.h,
+                  ),
                 ),
               ),
-            ),
-          ),
-          SvgPicture.asset(
-            'assets/svgs/app_logo_sendx.svg',
-            width: 29.w,
-            fit: BoxFit.contain,
+              Expanded(
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/svgs/app_logo_sendx.svg',
+                    width: 20.5.w,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.w),
+            ],
           ),
           Positioned(
             right: 4.w,
             bottom: .2.h,
-            child: Opacity(
-              opacity: .08,
-              child: Icon(
-                Icons.local_shipping_rounded,
-                color: const Color(0xFF176DF2),
-                size: 10.h,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: .08,
+                child: Icon(
+                  Icons.local_shipping_rounded,
+                  color: const Color(0xFF176DF2),
+                  size: 8.5.h,
+                ),
               ),
             ),
           ),
@@ -582,4 +578,21 @@ String _weightText(String weight) {
   if (clean.isEmpty) return '-';
   if (clean.toLowerCase().contains('lb')) return clean;
   return '$clean lb';
+}
+
+void _goBackFromPackages() {
+  final bottomNav = find<BottomNavController>();
+  final nestedNavigator = Get.nestedKey(bottomNav.bottomNavNestedID)?.currentState;
+  if (nestedNavigator?.canPop() ?? false) {
+    nestedNavigator!.pop();
+    return;
+  }
+
+  final rootNavigator = Get.key.currentState;
+  if (rootNavigator?.canPop() ?? false) {
+    Get.back();
+    return;
+  }
+
+  bottomNav.onTabChange(0);
 }

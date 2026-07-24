@@ -74,32 +74,35 @@ class _InvoiceHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 10.h,
-      child: Stack(
-        alignment: Alignment.center,
+      height: 8.2.h,
+      child: Row(
         children: [
-          Positioned(
-            left: 1.2.w,
-            top: 1.2.h,
+          SizedBox(
+            width: 12.w,
             child: IconButton(
-              onPressed: () {
-                final bottomNavNestedID =
-                    find<BottomNavController>().bottomNavNestedID;
-                Get.back(id: bottomNavNestedID);
-              },
+              onPressed: _goBackFromInvoices,
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(
+                minWidth: 10.w,
+                minHeight: 5.h,
+              ),
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: const Color(0xFF07152B),
-                size: 2.8.h,
+                size: 2.5.h,
               ),
             ),
           ),
-          SvgPicture.asset(
-            'assets/svgs/app_logo_sendx.svg',
-            fit: BoxFit.contain,
-            width: 22.w,
-            height: 6.2.h,
+          Expanded(
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/svgs/app_logo_sendx.svg',
+                fit: BoxFit.contain,
+                width: 20.5.w,
+              ),
+            ),
           ),
+          SizedBox(width: 12.w),
         ],
       ),
     );
@@ -545,4 +548,21 @@ class _EmptyInvoices extends StatelessWidget {
       ],
     );
   }
+}
+
+void _goBackFromInvoices() {
+  final bottomNav = find<BottomNavController>();
+  final nestedNavigator = Get.nestedKey(bottomNav.bottomNavNestedID)?.currentState;
+  if (nestedNavigator?.canPop() ?? false) {
+    nestedNavigator!.pop();
+    return;
+  }
+
+  final rootNavigator = Get.key.currentState;
+  if (rootNavigator?.canPop() ?? false) {
+    Get.back();
+    return;
+  }
+
+  bottomNav.onTabChange(0);
 }

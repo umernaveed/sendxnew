@@ -47,16 +47,19 @@ class _AccountHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomNavNestedID = find<BottomNavController>().bottomNavNestedID;
     return SizedBox(
-      height: 9.5.h,
-      child: Stack(
-        alignment: Alignment.center,
+      height: 8.2.h,
+      child: Row(
         children: [
-          Positioned(
-            left: 0,
+          SizedBox(
+            width: 12.w,
             child: IconButton(
-              onPressed: () => Get.back(id: bottomNavNestedID),
+              onPressed: _goBackFromAccount,
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(
+                minWidth: 10.w,
+                minHeight: 5.h,
+              ),
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: const Color(0xFF07132D),
@@ -64,11 +67,16 @@ class _AccountHeader extends StatelessWidget {
               ),
             ),
           ),
-          SvgPicture.asset(
-            'assets/svgs/app_logo_sendx.svg',
-            width: 21.w,
-            fit: BoxFit.contain,
+          Expanded(
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/svgs/app_logo_sendx.svg',
+                width: 20.5.w,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
+          SizedBox(width: 12.w),
         ],
       ),
     );
@@ -659,4 +667,21 @@ class AppDivider extends StatelessWidget {
       color: Color(0xffE2E2E2),
     );
   }
+}
+
+void _goBackFromAccount() {
+  final bottomNav = find<BottomNavController>();
+  final nestedNavigator = Get.nestedKey(bottomNav.bottomNavNestedID)?.currentState;
+  if (nestedNavigator?.canPop() ?? false) {
+    nestedNavigator!.pop();
+    return;
+  }
+
+  final rootNavigator = Get.key.currentState;
+  if (rootNavigator?.canPop() ?? false) {
+    Get.back();
+    return;
+  }
+
+  bottomNav.onTabChange(0);
 }
