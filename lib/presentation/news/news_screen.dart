@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:sendx/app/core/assets/drawables.dart';
+import 'package:sendx/app/core/get_di.dart';
 import 'package:sendx/app/extensions/string_ext.dart';
 import 'package:sendx/data/models/news/news.dart';
 import 'package:sendx/presentation/bottom_nav/controllers/bottom_nav_controller.dart';
