@@ -53,6 +53,7 @@ class AppPushNotifications {
         ),
       ),
       onDidReceiveNotificationResponse: (details) {
+        find<FlutterAppNotificationBadger>().clearBadge();
         final payload = details.payload;
         if (payload != null) {
           final data = jsonDecode(payload);
@@ -97,6 +98,7 @@ class AppPushNotifications {
         RemoteNotification? notification = message.notification;
         AndroidNotification? android = message.notification?.android;
         if (notification != null && android != null) {
+          find<FlutterAppNotificationBadger>().setBadgeCount();
           showNotificationsPopUp(message);
         }
       },
@@ -116,6 +118,7 @@ class AppPushNotifications {
 
   static void _listener(RemoteMessage message) {
     log('-------On Tap Listener--------');
+    find<FlutterAppNotificationBadger>().clearBadge();
     final data = message.data;
     redirectToScreen(data['type1']);
   }
@@ -167,17 +170,22 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 class FlutterAppNotificationBadger {
   bool? isBadgerSupported;
   int lastCount = 0;
+  final RxInt notificationCount = 0.obs;
 
   FlutterAppNotificationBadger() {
     isSupported();
   }
 
-  Future<void> setBadgeCount({int count = 0}) async {
-    final c = lastCount++;
+  Future<void> setBadgeCount({int? count}) async {
+    final c = count ?? lastCount + 1;
+    lastCount = c;
+    notificationCount.value = c;
     // await FlutterAppBadger.updateBadgeCount(c);
   }
 
   Future<void> clearBadge() async {
+    lastCount = 0;
+    notificationCount.value = 0;
     // await FlutterAppBadger.removeBadge();
   }
 

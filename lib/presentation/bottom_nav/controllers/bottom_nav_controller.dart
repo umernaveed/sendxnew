@@ -24,6 +24,9 @@ class BottomNavController extends GetxController {
       case 3:
         Get.toNamed(AppPages.newsScreen, id: bottomNavNestedID);
         break;
+      case 4:
+        Get.toNamed(AppPages.supportTickets, id: bottomNavNestedID);
+        break;
     }
   }
 

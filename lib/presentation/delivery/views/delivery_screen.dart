@@ -116,14 +116,29 @@ class _DeliveryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavNestedID = find<BottomNavController>().bottomNavNestedID;
     return SizedBox(
       height: 10.2.h,
-      child: Center(
-        child: SvgPicture.asset(
-          'assets/svgs/app_logo_sendx.svg',
-          width: 23.w,
-          fit: BoxFit.contain,
-        ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            left: 3.2.w,
+            child: IconButton(
+              onPressed: () => Get.back(id: bottomNavNestedID),
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: const Color(0xFF07132D),
+                size: 2.5.h,
+              ),
+            ),
+          ),
+          SvgPicture.asset(
+            'assets/svgs/app_logo_sendx.svg',
+            width: 21.w,
+            fit: BoxFit.contain,
+          ),
+        ],
       ),
     );
   }
@@ -165,13 +180,13 @@ class _DeliverySearchField extends StatelessWidget {
                       hintText: 'Search by HAWB, name, supplier or tracking...',
                       hintStyle: TextStyle(
                         color: const Color(0xFF8B919D),
-                        fontSize: 11.5.sp,
+                        fontSize: 10.2.sp,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
                     style: TextStyle(
                       color: const Color(0xFF111D35),
-                      fontSize: 11.5.sp,
+                      fontSize: 10.2.sp,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -291,7 +306,7 @@ class _DeliveryPackageCardState extends State<_DeliveryPackageCard> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: const Color(0xFF111D35),
-                    fontSize: 13.2.sp,
+                    fontSize: 11.2.sp,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -306,7 +321,7 @@ class _DeliveryPackageCardState extends State<_DeliveryPackageCard> {
                 item.createdAt.toDDMMYYYY,
                 style: TextStyle(
                   color: const Color(0xFF111D35),
-                  fontSize: 11.3.sp,
+                  fontSize: 9.8.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -378,8 +393,8 @@ class _DeliveryPackageCardState extends State<_DeliveryPackageCard> {
                 Text(
                   'Package Amount',
                   style: TextStyle(
-                    color: const Color(0xFF0A9E69),
-                    fontSize: 12.sp,
+                  color: const Color(0xFF0A9E69),
+                    fontSize: 10.3.sp,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -387,8 +402,8 @@ class _DeliveryPackageCardState extends State<_DeliveryPackageCard> {
                 Text(
                   _amountWithCurrency(item.packageInvoice),
                   style: TextStyle(
-                    color: const Color(0xFF0A9E69),
-                    fontSize: 13.3.sp,
+                  color: const Color(0xFF0A9E69),
+                    fontSize: 11.5.sp,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -445,7 +460,7 @@ class _PackageInfoRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: const Color(0xFF586274),
-                  fontSize: 10.3.sp,
+                  fontSize: 9.2.sp,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -456,7 +471,7 @@ class _PackageInfoRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: const Color(0xFF111D35),
-                  fontSize: 11.2.sp,
+                  fontSize: 10.sp,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -546,7 +561,7 @@ class _SummaryRow extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: const Color(0xFF111D35),
-              fontSize: 12.1.sp,
+              fontSize: 10.4.sp,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -557,7 +572,7 @@ class _SummaryRow extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: valueColor,
-            fontSize: 13.sp,
+            fontSize: 11.2.sp,
             fontWeight: FontWeight.w900,
           ),
         ),
@@ -641,7 +656,7 @@ class _OutlinedActionButton extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                fontSize: 12.5.sp,
+                fontSize: 10.8.sp,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -689,7 +704,7 @@ class _PrimaryActionButton extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 12.5.sp,
+                  fontSize: 10.8.sp,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -721,7 +736,7 @@ class _EmptyDelivery extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: const Color(0xFF334155),
-            fontSize: 12.sp,
+            fontSize: 10.5.sp,
             fontWeight: FontWeight.w700,
           ),
         ),

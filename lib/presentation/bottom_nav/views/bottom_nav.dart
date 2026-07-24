@@ -16,32 +16,29 @@ class BottomNavScreen extends GetView<BottomNavController> {
     return BaseScreen(
       value: SystemUiOverlayStyle.dark,
       showGradients: true,
-      extendBody: true,
+      extendBody: false,
       wrapWithAnnotatedRegion: true,
-      body: Container(
-        margin: EdgeInsets.only(bottom: 9.h),
-        child: Navigator(
-          key: Get.nestedKey(controller.bottomNavNestedID),
-          onGenerateRoute: (settings) {
-            Get.routing.args = settings.arguments;
-            final page = AppRoutes.routes.firstWhere(
-              (r) => r.name == settings.name,
-            );
-            return GetPageRoute<dynamic>(
-              page: page.page,
-              settings: settings,
-              binding: page.binding,
-              transition: page.transition,
-              parameter: page.parameters,
-              opaque: page.opaque,
-              popGesture: page.popGesture,
-              fullscreenDialog: page.fullscreenDialog,
-              maintainState: page.maintainState,
-              curve: page.curve,
-              middlewares: page.middlewares,
-            );
-          },
-        ),
+      body: Navigator(
+        key: Get.nestedKey(controller.bottomNavNestedID),
+        onGenerateRoute: (settings) {
+          Get.routing.args = settings.arguments;
+          final page = AppRoutes.routes.firstWhere(
+            (r) => r.name == settings.name,
+          );
+          return GetPageRoute<dynamic>(
+            page: page.page,
+            settings: settings,
+            binding: page.binding,
+            transition: page.transition,
+            parameter: page.parameters,
+            opaque: page.opaque,
+            popGesture: page.popGesture,
+            fullscreenDialog: page.fullscreenDialog,
+            maintainState: page.maintainState,
+            curve: page.curve,
+            middlewares: page.middlewares,
+          );
+        },
       ),
       bottomNavigationBar: Container(
         height: 9.8.h,
@@ -140,6 +137,24 @@ class BottomNavScreen extends GetView<BottomNavController> {
                     ),
                   ),
                   label: 'News',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: Padding(
+                    padding: EdgeInsets.only(bottom: 0.25.h, top: 0.35.h),
+                    child: Icon(
+                      Icons.headset_mic_outlined,
+                      color: AppColors.cyan,
+                      size: 2.55.h,
+                    ),
+                  ),
+                  icon: Padding(
+                    padding: EdgeInsets.only(bottom: 0.25.h, top: 0.35.h),
+                    child: Icon(
+                      Icons.headset_mic_outlined,
+                      size: 2.55.h,
+                    ),
+                  ),
+                  label: 'Support',
                 ),
               ],
             ),

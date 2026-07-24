@@ -146,13 +146,13 @@ class _InvoiceSearchField extends StatelessWidget {
                 hintText: 'Search by invoice no, user name...',
                 hintStyle: TextStyle(
                   color: const Color(0xFF7C8291),
-                  fontSize: 11.2.sp,
+                  fontSize: 10.2.sp,
                   fontWeight: FontWeight.w400,
                 ),
               ),
               style: TextStyle(
                 color: const Color(0xFF111D35),
-                fontSize: 11.2.sp,
+                fontSize: 10.2.sp,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -226,7 +226,7 @@ class _InvoiceCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: const Color(0xFF111D35),
-                    fontSize: 12.8.sp,
+                    fontSize: 11.2.sp,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -336,7 +336,7 @@ class _InvoiceCard extends StatelessWidget {
                       'Invoice Detail',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 12.4.sp,
+                        fontSize: 10.8.sp,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -400,7 +400,7 @@ class _InvoiceInfoRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: const Color(0xFF697083),
-                  fontSize: 9.7.sp,
+                  fontSize: 8.8.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -412,7 +412,7 @@ class _InvoiceInfoRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: const Color(0xFF111D35),
-                      fontSize: 10.8.sp,
+                      fontSize: 9.8.sp,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -471,7 +471,7 @@ class _TopStatusChip extends StatelessWidget {
         title,
         style: TextStyle(
           color: isPaid ? const Color(0xFF11985A) : const Color(0xFF0B63BF),
-          fontSize: 10.2.sp,
+          fontSize: 9.2.sp,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -508,7 +508,7 @@ class _PaidStatusChip extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: Colors.white,
-              fontSize: 9.7.sp,
+              fontSize: 8.8.sp,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -538,7 +538,7 @@ class _EmptyInvoices extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: const Color(0xFF334155),
-            fontSize: 12.sp,
+            fontSize: 10.5.sp,
             fontWeight: FontWeight.w700,
           ),
         ),

@@ -174,13 +174,13 @@ class _PackageSearchField extends StatelessWidget {
                 hintText: 'Search by HAWB / Tracking / Package No.',
                 hintStyle: TextStyle(
                   color: const Color(0xFF8E95A3),
-                  fontSize: 12.sp,
+                  fontSize: 10.4.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               style: TextStyle(
                 color: const Color(0xFF111D35),
-                fontSize: 12.sp,
+                fontSize: 10.4.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -310,7 +310,7 @@ class _PackageCard extends GetView<AllDeliveryPackagesController> {
                       'Invoice Detail',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 13.4.sp,
+                        fontSize: 11.2.sp,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -375,7 +375,7 @@ class _InvoiceFileAction extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: const Color(0xFF111D35),
-                    fontSize: 11.5.sp,
+                    fontSize: 10.sp,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -388,7 +388,7 @@ class _InvoiceFileAction extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: const Color(0xFF667085),
-                    fontSize: 9.2.sp,
+                    fontSize: 8.6.sp,
                     fontWeight: FontWeight.w500,
                     height: 1.2,
                   ),
@@ -441,7 +441,7 @@ class _PackageLine extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: const Color(0xFF111D35),
-              fontSize: 12.1.sp,
+              fontSize: 10.2.sp,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -455,7 +455,7 @@ class _PackageLine extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: const Color(0xFF176DF2),
-                  fontSize: 12.2.sp,
+                  fontSize: 10.4.sp,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -494,7 +494,7 @@ class _CompactValue extends StatelessWidget {
       ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: TextStyle(fontSize: 11.5.sp),
+      style: TextStyle(fontSize: 10.sp),
     );
   }
 }
@@ -520,7 +520,7 @@ class _StatusChip extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           color: isPaid ? const Color(0xFF10A66B) : const Color(0xFF176DF2),
-          fontSize: 11.2.sp,
+          fontSize: 9.8.sp,
           fontWeight: FontWeight.w800,
         ),
       ),
@@ -561,7 +561,7 @@ class _EmptyPackages extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: const Color(0xFF334155),
-            fontSize: 12.sp,
+            fontSize: 10.5.sp,
             fontWeight: FontWeight.w700,
           ),
         ),

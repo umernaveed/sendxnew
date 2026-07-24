@@ -44,7 +44,7 @@ class ManagePickupRequest extends GetView<ManagePickUpRequestController> {
           'Manage Delivery Request',
           style: context.textTheme.bodyLarge?.copyWith(
             color: const Color(0xFF4791CE),
-            fontSize: 16.sp,
+            fontSize: 12.4.sp,
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w700,
           ),
@@ -152,7 +152,7 @@ class ManagePickupRequest extends GetView<ManagePickUpRequestController> {
                             hintText: 'Pick up Date',
                             hintStyle: context.textTheme.bodyMedium?.copyWith(
                               color: const Color(0x337C7C7C),
-                              fontSize: 11.sp,
+                              fontSize: 9.5.sp,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -368,7 +368,7 @@ class _AddressField extends StatelessWidget {
           lable,
           style: TextStyle(
             color: const Color(0xFF7C7C7C),
-            fontSize: 11.sp,
+            fontSize: 9.8.sp,
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -421,7 +421,7 @@ class _AddressField extends StatelessWidget {
               validator: validator,
               style: const TextStyle(
                 color: Color(0xFF181725),
-                fontSize: 18,
+                fontSize: 14,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -462,7 +462,7 @@ class _FieldWithLable extends StatelessWidget {
           lable,
           style: TextStyle(
             color: const Color(0xFF7C7C7C),
-            fontSize: 11.sp,
+            fontSize: 9.8.sp,
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -521,7 +521,7 @@ class _FieldWithLable extends StatelessWidget {
           validator: validator,
           style: const TextStyle(
             color: Color(0xFF181725),
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
         ),

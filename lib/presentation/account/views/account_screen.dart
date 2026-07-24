@@ -47,14 +47,29 @@ class _AccountHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavNestedID = find<BottomNavController>().bottomNavNestedID;
     return SizedBox(
       height: 9.5.h,
-      child: Center(
-        child: SvgPicture.asset(
-          'assets/svgs/app_logo_sendx.svg',
-          width: 23.w,
-          fit: BoxFit.contain,
-        ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            left: 0,
+            child: IconButton(
+              onPressed: () => Get.back(id: bottomNavNestedID),
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: const Color(0xFF07132D),
+                size: 2.5.h,
+              ),
+            ),
+          ),
+          SvgPicture.asset(
+            'assets/svgs/app_logo_sendx.svg',
+            width: 21.w,
+            fit: BoxFit.contain,
+          ),
+        ],
       ),
     );
   }
@@ -132,7 +147,7 @@ class _ProfileHero extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18.sp,
+                                fontSize: 15.2.sp,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
@@ -151,7 +166,7 @@ class _ProfileHero extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Colors.white.withOpacity(.9),
-                          fontSize: 13.sp,
+                          fontSize: 10.8.sp,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -350,7 +365,7 @@ class _AccountNavTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: const Color(0xFF111D35),
-                  fontSize: 13.sp,
+                  fontSize: 11.2.sp,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -398,7 +413,7 @@ class _ExpandableNavTile extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: const Color(0xFF111D35),
-            fontSize: 13.sp,
+            fontSize: 11.2.sp,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -432,7 +447,7 @@ class _ChildTile extends StatelessWidget {
                 title,
                 style: TextStyle(
                   color: const Color(0xFF586274),
-                  fontSize: 10.5.sp,
+                  fontSize: 9.4.sp,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -535,7 +550,7 @@ class _ActionTile extends StatelessWidget {
                     title,
                     style: TextStyle(
                       color: color,
-                      fontSize: 13.sp,
+                      fontSize: 11.2.sp,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -546,7 +561,7 @@ class _ActionTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: const Color(0xFF586274),
-                      fontSize: 10.sp,
+                      fontSize: 9.2.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

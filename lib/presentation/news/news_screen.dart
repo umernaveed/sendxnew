@@ -7,6 +7,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:sendx/app/core/assets/drawables.dart';
 import 'package:sendx/app/extensions/string_ext.dart';
 import 'package:sendx/data/models/news/news.dart';
+import 'package:sendx/presentation/bottom_nav/controllers/bottom_nav_controller.dart';
 import 'package:sendx/presentation/base_screen.dart';
 import 'package:sendx/presentation/news/news_controller.dart';
 import 'package:sendx/presentation/widgets/shimmer_widget.dart';
@@ -33,7 +34,7 @@ class NewsScreen extends GetView<NewsController> {
                 'News & Updates',
                 style: TextStyle(
                   color: const Color(0xFF07132D),
-                  fontSize: 15.5.sp,
+                  fontSize: 12.8.sp,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -76,14 +77,29 @@ class _NewsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavNestedID = find<BottomNavController>().bottomNavNestedID;
     return SizedBox(
       height: 10.h,
-      child: Center(
-        child: SvgPicture.asset(
-          'assets/svgs/app_logo_sendx.svg',
-          width: 23.w,
-          fit: BoxFit.contain,
-        ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            left: 3.2.w,
+            child: IconButton(
+              onPressed: () => Get.back(id: bottomNavNestedID),
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: const Color(0xFF07132D),
+                size: 2.5.h,
+              ),
+            ),
+          ),
+          SvgPicture.asset(
+            'assets/svgs/app_logo_sendx.svg',
+            width: 21.w,
+            fit: BoxFit.contain,
+          ),
+        ],
       ),
     );
   }
@@ -154,7 +170,7 @@ class _NewsCardState extends State<_NewsCard> {
               overflow: expanded ? TextOverflow.visible : TextOverflow.ellipsis,
               style: TextStyle(
                 color: const Color(0xFF07132D),
-                fontSize: 17.sp,
+                fontSize: 13.2.sp,
                 fontWeight: FontWeight.w900,
                 height: 1.2,
               ),
@@ -189,7 +205,7 @@ class _NewsCardState extends State<_NewsCard> {
               overflow: expanded ? TextOverflow.visible : TextOverflow.ellipsis,
               style: TextStyle(
                 color: const Color(0xFF111827),
-                fontSize: 12.7.sp,
+                fontSize: 10.6.sp,
                 fontWeight: FontWeight.w500,
                 height: 1.45,
               ),
@@ -220,7 +236,7 @@ class _NewsCardState extends State<_NewsCard> {
                     expanded ? 'Show Less' : 'Read Full Announcement',
                     style: TextStyle(
                       color: const Color(0xFF176DF2),
-                      fontSize: 11.5.sp,
+                      fontSize: 10.2.sp,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -285,7 +301,7 @@ class _EmptyNews extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: const Color(0xFF334155),
-            fontSize: 12.sp,
+            fontSize: 10.5.sp,
             fontWeight: FontWeight.w700,
           ),
         ),

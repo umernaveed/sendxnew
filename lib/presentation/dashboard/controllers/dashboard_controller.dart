@@ -3,7 +3,6 @@ import 'package:sendx/app/core/get_di.dart';
 import 'package:sendx/app/core/routes/app_pages.dart';
 import 'package:sendx/app/extensions/controller_ext.dart';
 import 'package:sendx/app/services/device_service.dart';
-import 'package:sendx/app/services/push_notifications_service.dart';
 import 'package:sendx/app/util/flush_snackbar.dart';
 import 'package:sendx/data/models/app_meta/app_meta.dart';
 import 'package:sendx/data/models/dashboard_data/dashboard_data.dart';
@@ -37,8 +36,6 @@ class DashboardController extends GetxController
   @override
   void onReady() {
     Future.delayed(500.milliseconds, () => fetchDashboard());
-    final badger = find<FlutterAppNotificationBadger>();
-    badger.clearBadge();
     super.onReady();
   }
 

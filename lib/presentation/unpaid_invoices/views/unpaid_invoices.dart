@@ -188,13 +188,13 @@ class _UnpaidSearchField extends StatelessWidget {
                 hintText: 'Search unpaid invoices...',
                 hintStyle: TextStyle(
                   color: const Color(0xFF8E95A3),
-                  fontSize: 11.5.sp,
+                  fontSize: 10.2.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               style: TextStyle(
                 color: const Color(0xFF111D35),
-                fontSize: 11.5.sp,
+                fontSize: 10.2.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -267,7 +267,7 @@ class _UnpaidInvoiceCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: const Color(0xFF111D35),
-                    fontSize: 13.sp,
+                    fontSize: 11.2.sp,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -359,7 +359,7 @@ class _UnpaidInvoiceCard extends StatelessWidget {
                   Text(
                     'Invoice Detail',
                     style: TextStyle(
-                      fontSize: 12.5.sp,
+                      fontSize: 10.8.sp,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -467,7 +467,7 @@ class _PaymentSummaryPanel extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: const Color(0xFF176DF2),
-                        fontSize: 14.sp,
+                        fontSize: 11.8.sp,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -486,7 +486,7 @@ class _PaymentSummaryPanel extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: const Color(0xFF0CA45D),
-                        fontSize: 12.5.sp,
+                        fontSize: 10.7.sp,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -513,7 +513,7 @@ class _PaymentSummaryPanel extends StatelessWidget {
                   label: Text(
                     'Clear',
                     style: TextStyle(
-                      fontSize: 11.8.sp,
+                      fontSize: 10.4.sp,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -545,7 +545,7 @@ class _PaymentSummaryPanel extends StatelessWidget {
                       label: Text(
                         'Pay Now',
                         style: TextStyle(
-                          fontSize: 12.sp,
+                          fontSize: 10.6.sp,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -600,7 +600,7 @@ class _SummaryTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: const Color(0xFF667085),
-                    fontSize: 8.8.sp,
+                    fontSize: 8.2.sp,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -651,7 +651,7 @@ class _InfoLine extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: const Color(0xFF697083),
-                  fontSize: 9.2.sp,
+                  fontSize: 8.4.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -662,7 +662,7 @@ class _InfoLine extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: const Color(0xFF111D35),
-                  fontSize: 10.2.sp,
+                  fontSize: 9.2.sp,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -725,7 +725,7 @@ class _StatusBadge extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           color: const Color(0xFFB35C00),
-          fontSize: 9.8.sp,
+          fontSize: 8.8.sp,
           fontWeight: FontWeight.w800,
         ),
       ),
@@ -753,7 +753,7 @@ class _EmptyUnpaidInvoices extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: const Color(0xFF334155),
-            fontSize: 12.sp,
+            fontSize: 10.5.sp,
             fontWeight: FontWeight.w700,
           ),
         ),

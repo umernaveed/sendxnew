@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:sendx/app/core/get_di.dart';
 import 'package:sendx/app/util/flush_snackbar.dart';
+import 'package:sendx/presentation/bottom_nav/controllers/bottom_nav_controller.dart';
 import 'package:sendx/presentation/dashboard/controllers/dashboard_address_controller.dart';
 import 'package:sendx/presentation/widgets/shimmer_widget.dart';
 import 'package:sizer/sizer.dart';
@@ -14,77 +17,115 @@ class Address extends GetView<DashboardAddressController> {
     return RefreshIndicator(
       onRefresh: controller.refreshData,
       color: const Color(0xFF176DF2),
-      child: controller.obx(
-        onLoading: const _ShimmerLoading(),
-        onEmpty: const _EmptyState(
-          message: 'No address data found',
-          icon: Icons.location_off_outlined,
-        ),
-        onError: (error) => const _EmptyState(
-          message: 'Something went wrong. Please try again later.',
-          icon: Icons.error_outline_rounded,
-        ),
-        (state) {
-          if (state == null) {
-            return const _EmptyState(
-              message: 'No address data found',
-              icon: Icons.location_off_outlined,
-            );
-          }
+      child: SafeArea(
+        bottom: false,
+        child: controller.obx(
+          onLoading: const _ShimmerLoading(),
+          onEmpty: const _EmptyState(
+            message: 'No address data found',
+            icon: Icons.location_off_outlined,
+          ),
+          onError: (error) => const _EmptyState(
+            message: 'Something went wrong. Please try again later.',
+            icon: Icons.error_outline_rounded,
+          ),
+          (state) {
+            if (state == null) {
+              return const _EmptyState(
+                message: 'No address data found',
+                icon: Icons.location_off_outlined,
+              );
+            }
 
-          return SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.fromLTRB(4.w, 0.8.h, 4.w, 2.5.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const _AddressHero(),
-                SizedBox(height: 2.h),
-                AddressItemWidget(
-                  title: 'Air Shipping Address',
-                  caption: 'Use this address for regular air freight.',
-                  icon: Icons.flight_takeoff_rounded,
-                  accentColor: const Color(0xFF176DF2),
-                  name: state.userInfo.userName,
-                  address1: state.setting.packageShippingAddress1,
-                  address2: state.userInfo.addressLine2,
-                  city: state.setting.city,
-                  country: state.setting.country,
-                  zipCode: state.setting.zip,
-                  state: state.setting.state,
-                ),
-                SizedBox(height: 1.6.h),
-                AddressItemWidget(
-                  title: 'Sea Shipping Address',
-                  caption: 'Use this address for sea cargo shipments.',
-                  icon: Icons.directions_boat_filled_outlined,
-                  accentColor: const Color(0xFF12AEDD),
-                  name: state.userInfo.userName,
-                  address1: state.setting.seaShippingAddress1,
-                  address2: state.setting.seaShippingAddress2,
-                  city: state.setting.seaCity,
-                  country: state.setting.seaCountry,
-                  zipCode: state.setting.seaZip,
-                  state: state.setting.seaState,
-                ),
-                SizedBox(height: 1.6.h),
-                AddressItemWidget(
-                  title: 'Air Express Shipping Address',
-                  caption: 'Use this address for express shipments.',
-                  icon: Icons.local_shipping_outlined,
-                  accentColor: const Color(0xFFFF315B),
-                  name: state.userInfo.userName,
-                  address1: state.setting.expressShippingAddress1,
-                  address2: state.setting.expressShippingAddress2,
-                  city: state.setting.expressCity,
-                  country: state.setting.expressCountry,
-                  zipCode: state.setting.expressZip,
-                  state: state.setting.expressState,
-                ),
-              ],
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(4.w, 0.2.h, 4.w, 4.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const _AddressHeader(),
+                  SizedBox(height: 1.h),
+                  const _AddressHero(),
+                  SizedBox(height: 1.5.h),
+                  AddressItemWidget(
+                    title: 'Air Shipping Address',
+                    caption: 'Use this address for regular air freight.',
+                    icon: Icons.flight_takeoff_rounded,
+                    accentColor: const Color(0xFF176DF2),
+                    name: state.userInfo.userName,
+                    address1: state.setting.packageShippingAddress1,
+                    address2: state.userInfo.addressLine2,
+                    city: state.setting.city,
+                    country: state.setting.country,
+                    zipCode: state.setting.zip,
+                    state: state.setting.state,
+                  ),
+                  SizedBox(height: 1.4.h),
+                  AddressItemWidget(
+                    title: 'Sea Shipping Address',
+                    caption: 'Use this address for sea cargo shipments.',
+                    icon: Icons.directions_boat_filled_outlined,
+                    accentColor: const Color(0xFF12AEDD),
+                    name: state.userInfo.userName,
+                    address1: state.setting.seaShippingAddress1,
+                    address2: state.setting.seaShippingAddress2,
+                    city: state.setting.seaCity,
+                    country: state.setting.seaCountry,
+                    zipCode: state.setting.seaZip,
+                    state: state.setting.seaState,
+                  ),
+                  SizedBox(height: 1.4.h),
+                  AddressItemWidget(
+                    title: 'Air Express Shipping Address',
+                    caption: 'Use this address for express shipments.',
+                    icon: Icons.local_shipping_outlined,
+                    accentColor: const Color(0xFFFF315B),
+                    name: state.userInfo.userName,
+                    address1: state.setting.expressShippingAddress1,
+                    address2: state.setting.expressShippingAddress2,
+                    city: state.setting.expressCity,
+                    country: state.setting.expressCountry,
+                    zipCode: state.setting.expressZip,
+                    state: state.setting.expressState,
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _AddressHeader extends StatelessWidget {
+  const _AddressHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomNavNestedID = find<BottomNavController>().bottomNavNestedID;
+    return SizedBox(
+      height: 8.5.h,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            left: -1.w,
+            child: IconButton(
+              onPressed: () => Get.back(id: bottomNavNestedID),
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: const Color(0xFF07132D),
+                size: 2.5.h,
+              ),
             ),
-          );
-        },
+          ),
+          SvgPicture.asset(
+            'assets/svgs/app_logo_sendx.svg',
+            width: 21.w,
+            fit: BoxFit.contain,
+          ),
+        ],
       ),
     );
   }
@@ -97,9 +138,9 @@ class _AddressHero extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.4.h),
+      padding: EdgeInsets.symmetric(horizontal: 4.3.w, vertical: 1.8.h),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(20),
         gradient: const LinearGradient(
           colors: [
             Color(0xFF176DF2),
@@ -120,8 +161,8 @@ class _AddressHero extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 13.w,
-            height: 13.w,
+            width: 11.5.w,
+            height: 11.5.w,
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.16),
               borderRadius: BorderRadius.circular(18),
@@ -130,10 +171,10 @@ class _AddressHero extends StatelessWidget {
             child: Icon(
               Icons.location_on_outlined,
               color: Colors.white,
-              size: 7.w,
+              size: 6.2.w,
             ),
           ),
-          SizedBox(width: 4.w),
+          SizedBox(width: 3.2.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +185,7 @@ class _AddressHero extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18.sp,
+                    fontSize: 13.8.sp,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -155,7 +196,7 @@ class _AddressHero extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.86),
-                    fontSize: 10.8.sp,
+                    fontSize: 9.8.sp,
                     fontWeight: FontWeight.w500,
                     height: 1.28,
                   ),
@@ -212,7 +253,7 @@ class AddressItemWidget extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(4.w),
+      padding: EdgeInsets.all(3.5.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -245,7 +286,7 @@ class AddressItemWidget extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: const Color(0xFF07132D),
-                        fontSize: 14.5.sp,
+                        fontSize: 11.8.sp,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -256,7 +297,7 @@ class AddressItemWidget extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: const Color(0xFF7B8599),
-                        fontSize: 9.8.sp,
+                        fontSize: 8.9.sp,
                         fontWeight: FontWeight.w500,
                         height: 1.22,
                       ),
@@ -270,21 +311,21 @@ class AddressItemWidget extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 1.8.h),
+          SizedBox(height: 1.4.h),
           ...List.generate(fields.length, (index) {
             final field = fields[index];
             return Padding(
-              padding: EdgeInsets.only(bottom: index == fields.length - 1 ? 0 : 0.9.h),
+              padding: EdgeInsets.only(bottom: index == fields.length - 1 ? 0 : 0.75.h),
               child: _AddressFieldRow(
                 field: field,
                 accentColor: accentColor,
               ),
             );
           }),
-          SizedBox(height: 1.5.h),
+          SizedBox(height: 1.2.h),
           SizedBox(
             width: double.infinity,
-            height: 5.6.h,
+            height: 5.2.h,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: accentColor,
@@ -299,7 +340,7 @@ class AddressItemWidget extends StatelessWidget {
               label: Text(
                 'Copy Full Address',
                 style: TextStyle(
-                  fontSize: 12.sp,
+                  fontSize: 10.6.sp,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -343,7 +384,7 @@ class _AddressFieldRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 3.2.w, vertical: 1.15.h),
+      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.0.h),
       decoration: BoxDecoration(
         color: const Color(0xFFF7FAFF),
         borderRadius: BorderRadius.circular(14),
@@ -367,7 +408,7 @@ class _AddressFieldRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: const Color(0xFF7B8599),
-                    fontSize: 9.5.sp,
+                    fontSize: 8.4.sp,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -378,7 +419,7 @@ class _AddressFieldRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: const Color(0xFF07132D),
-                    fontSize: 11.4.sp,
+                    fontSize: 9.8.sp,
                     fontWeight: FontWeight.w800,
                     height: 1.2,
                   ),
@@ -409,8 +450,8 @@ class _IconTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 12.w,
-      height: 12.w,
+      width: 10.8.w,
+      height: 10.8.w,
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15),
@@ -418,7 +459,7 @@ class _IconTile extends StatelessWidget {
       child: Icon(
         icon,
         color: color,
-        size: 6.w,
+        size: 5.4.w,
       ),
     );
   }
@@ -447,7 +488,7 @@ class _CopyButton extends StatelessWidget {
           child: Icon(
             Icons.copy_rounded,
             color: color,
-            size: 2.2.h,
+            size: 2.h,
           ),
         ),
       ),
@@ -468,7 +509,7 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(4.w, 8.h, 4.w, 2.h),
+      padding: EdgeInsets.fromLTRB(4.w, 8.h, 4.w, 4.h),
       child: Center(
         child: Column(
           children: [
@@ -509,13 +550,15 @@ class _ShimmerLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(4.w, 0.8.h, 4.w, 2.5.h),
+      padding: EdgeInsets.fromLTRB(4.w, 0.2.h, 4.w, 4.h),
       child: Column(
         children: [
+          const _AddressHeader(),
+          SizedBox(height: 1.h),
           ShimmerWidget(
             radius: BorderRadius.circular(22),
             width: double.infinity,
-            height: 13.h,
+            height: 10.5.h,
             child: const SizedBox.shrink(),
           ),
           SizedBox(height: 2.h),

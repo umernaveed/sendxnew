@@ -7,6 +7,7 @@ import 'package:sendx/app/core/get_di.dart';
 import 'package:sendx/app/core/routes/app_pages.dart';
 import 'package:sendx/app/core/theme/app_colors.dart';
 import 'package:sendx/app/extensions/string_ext.dart';
+import 'package:sendx/app/services/push_notifications_service.dart';
 import 'package:sendx/app/util/flush_snackbar.dart';
 import 'package:sendx/data/models/dashboard_data/dashboard_data.dart';
 import 'package:sendx/data/models/get_packages_ready_for_pickup_response/get_packages_ready_for_pickup_response.dart';
@@ -80,6 +81,7 @@ class _DashboardTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final badger = find<FlutterAppNotificationBadger>();
     return Row(
       children: [
         IconButton(
@@ -100,7 +102,10 @@ class _DashboardTopBar extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             IconButton(
-              onPressed: () => _goToNested(AppPages.newsScreen),
+              onPressed: () {
+                badger.clearBadge();
+                _goToNested(AppPages.newsScreen);
+              },
               icon: const Icon(
                 Icons.notifications_none_rounded,
                 color: Color(0xFF07132D),
@@ -112,20 +117,31 @@ class _DashboardTopBar extends StatelessWidget {
             Positioned(
               right: -1,
               top: -2,
-              child: Container(
-                padding: const EdgeInsets.all(5),
-                decoration: const BoxDecoration(
-                  color: AppColors.coral,
-                  shape: BoxShape.circle,
-                ),
-                child: const Text(
-                  '3',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+              child: Obx(
+                () {
+                  final count = badger.notificationCount.value;
+                  if (count <= 0) return const SizedBox.shrink();
+                  return Container(
+                    constraints: const BoxConstraints(
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      color: AppColors.coral,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      count > 99 ? '99+' : count.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  );
+                },
               ),
             )
           ],
@@ -826,7 +842,6 @@ class _QuickActionsCard extends StatelessWidget {
       _QuickAction('My Invoices', Icons.description_rounded, const Color(0xFF8766E8), AppPages.invoices),
       _QuickAction('Support Ticket', Icons.headset_mic_rounded, const Color(0xFFFF8A00), AppPages.supportTickets),
       _QuickAction('Track Shipment', Icons.location_on_rounded, const Color(0xFF20A85B), AppPages.trackPackages),
-      _QuickAction('Rate Calculator', Icons.calculate_rounded, AppColors.coral, AppPages.purchase),
     ];
 
     return _SoftCard(
