@@ -542,6 +542,8 @@ class _RewardsWalletCard extends StatelessWidget {
           _AmountLine(amount: '${data.memberPoints.toStringAsFixed(2)} USD', label: 'Rewards Balance'),
           SizedBox(height: 1.1.h),
           _AmountLine(amount: '${rewardJmd.toStringAsFixed(2)} JMD', label: 'Rewards Balance'),
+          SizedBox(height: 1.1.h),
+          _AmountLine(amount: '${data.walletBalance.toStringAsFixed(2)} JMD', label: 'Cash Wallet'),
           SizedBox(height: 1.5.h),
           Divider(color: AppColors.border.withOpacity(.8)),
           SizedBox(height: .9.h),

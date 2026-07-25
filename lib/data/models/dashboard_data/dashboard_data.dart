@@ -28,6 +28,8 @@ class DashboardData {
   final dynamic pendingBalance;
   @JsonKey(name: 'available_balance', defaultValue: 0)
   final int availableBalance;
+  @JsonKey(name: 'wallet_balance', defaultValue: 0)
+  final num walletBalance;
   @JsonKey(name: 'package_count', defaultValue: 0)
   final int packageCount;
   @JsonKey(name: 'package_weight', defaultValue: 0)
@@ -53,6 +55,7 @@ class DashboardData {
     required this.referralCode,
     required this.pendingBalance,
     required this.availableBalance,
+    required this.walletBalance,
     required this.packageCount,
     required this.packageWeight,
     required this.accountManager,
@@ -73,6 +76,7 @@ class DashboardData {
       wherehouse: 0,
       pendingBalance: 0,
       availableBalance: 0,
+      walletBalance: 0,
       packageCount: 0,
       packageWeight: 0,
       referralCode: '',
