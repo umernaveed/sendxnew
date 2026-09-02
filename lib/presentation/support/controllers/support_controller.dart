@@ -144,12 +144,25 @@ class SupportController extends GetxController {
     final fullName = '${values['full_name'] ?? contactName}'.trim();
     final phone = '${values['phone_number'] ?? contactPhone}'.trim();
     final email = '${values['email'] ?? contactEmail}'.trim();
+    final trackingNumber = '${values['tracking_number'] ?? ''}'.trim();
+    if (trackingNumber.isEmpty) {
+      return (isDone: false, message: 'Please enter your package tracking number.');
+    }
+
+    final hasExistingTicketForPackage = tickets.any(
+      (ticket) => ticket.trackingNumber.trim().toLowerCase() == trackingNumber.toLowerCase(),
+    );
+    if (hasExistingTicketForPackage) {
+      return (isDone: false, message: 'A support ticket already exists for this package tracking number.');
+    }
+
     final formData = dio.FormData.fromMap({
       'full_name': fullName,
       'phone_number': phone,
       'email': email,
       'suite_number': values['suite_number'] ?? '',
-      'tracking_number': values['tracking_number'] ?? '',
+      'tracking_number': trackingNumber,
+      'supplier_tracking_no': trackingNumber,
       'package_description': values['package_description'] ?? '',
       'issue_type': values['issue_type'] ?? selectedIssueType.value,
       'priority': values['priority'] ?? selectedPriority.value,

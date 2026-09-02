@@ -525,12 +525,13 @@ class _TrackingField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionLabel('Select Package (Optional)'),
+        _SectionLabel('Package Tracking Number *'),
         SizedBox(height: .7.h),
         FormBuilderTextField(
           name: 'tracking_number',
+          validator: FormBuilderValidators.required(),
           decoration: _inputDecoration(
-            hint: 'Search My Packages',
+            hint: 'Enter supplier tracking no.',
             icon: Icons.inventory_2_outlined,
           ),
         ),
